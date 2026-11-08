@@ -165,27 +165,6 @@ replaced after the smoke test, the reason is recorded here and reported.
 
 **Affects:** T02, T18, T25; EQ2, EQ3; Week 7–8 pacing.
 
-## D-009 — Evidence is a compact trace, not raw HTML
-**Date:** 2026-11-08
-**Decision:** `evidence.py` writes a condensed, judge-ready trace per run:
-the scenario steps, the action taken at each step, the visible text that
-changed, any message shown, the final state, and the run outcome. Raw page
-source is not written into the evidence passed to the judge.
-**Reason:** Judge cost is dominated by evidence length. One raw HTML page runs
-to tens of thousands of tokens; across 540 calls that is millions of tokens and
-would not fit a free tier. Beyond cost, a long dump dilutes the judge's
-attention, and the human evaluator reads the same evidence — 25 runs of raw
-HTML is not readable, and an unreadable reference is a worse reference.
-**Both judges see exactly the same evidence.** If they saw different material,
-EQ2 would be comparing two different tasks.
-**Affects:** T14, T18, T19, T25, T26; EQ2, EQ5; judge token cost.
-
-## D-010 — <next decision>
-**Date:**
-**Decision:**
-**Reason:**
-**Affects:**
-
 ## D-008 — The requirements document mandates stable test selectors
 **Date:** 2026-11-08
 **Decision:** `app/REQUIREMENTS.md` §3 requires every interactive element to
@@ -202,7 +181,22 @@ for V0 and V1–V3, so it favours no version; and it says nothing about what wil
 be tested, so it does not leak the holdout.
 **Affects:** T05, T06, T13, T15; EQ4, EQ5; report threats section.
 
-## D-009 — <next decision>
+## D-009 — Evidence is a compact trace, not raw HTML
+**Date:** 2026-11-08
+**Decision:** `evidence.py` writes a condensed, judge-ready trace per run:
+the scenario steps, the action taken at each step, the visible text that
+changed, any message shown, the final state, and the run outcome. Raw page
+source is not written into the evidence passed to the judge.
+**Reason:** Judge cost is dominated by evidence length. One raw HTML page runs
+to tens of thousands of tokens; across 540 calls that is millions of tokens and
+would not fit a free tier. Beyond cost, a long dump dilutes the judge's
+attention, and the human evaluator reads the same evidence — 25 runs of raw
+HTML is not readable, and an unreadable reference is a worse reference.
+**Both judges see exactly the same evidence.** If they saw different material,
+EQ2 would be comparing two different tasks.
+**Affects:** T14, T18, T19, T25, T26; EQ2, EQ5; judge token cost.
+
+## D-010 — <next decision>
 **Date:**
 **Decision:**
 **Reason:**
