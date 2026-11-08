@@ -1,0 +1,13 @@
+# Harness only. The application under test (app/) uses Node, not Python.
+# Versions are intentionally unpinned here. After installing, run
+#   pip freeze > requirements.lock.txt
+# and commit the lock file. The lock file is the reproducibility record (C10),
+# and the installed versions go into records/W01/W01.md.
+
+playwright            # browser automation: scenario runner + both test suites
+pytest                # test baselines A and B
+pytest-playwright     # pytest fixtures for playwright
+pandas                # dataset assembly and analysis
+matplotlib            # figures F1-F11
+scikit-learn          # cohen_kappa_score (EQ2)
+statsmodels           # proportion_confint -> Wilson intervals (EQ2, EQ3)
