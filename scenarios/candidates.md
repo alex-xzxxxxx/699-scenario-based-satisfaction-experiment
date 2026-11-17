@@ -6,9 +6,11 @@ Drafted from `use-cases.md` (UC1–UC5) and `app/REQUIREMENTS.md` v1.1, in the
 template of Appendix B Table B1. Severity follows Table 8 and is assigned here,
 before any result exists.
 
-These are **candidates**. T11 validates each against the Table B4 checklist,
-confirms category and severity, and removes duplicates and anything not
-observable. The library is frozen and tagged at T12, end of Week 5.
+These are **candidates**. T11 has now validated each against the Table B4
+checklist: **47 accepted, 27 rejected**, with the decision and reason for every
+one recorded in `validation.md` and `validation.csv`. This file is kept as
+drafted, so that what was proposed and what survived can be compared. The
+library is frozen and tagged at T12, end of Week 5.
 
 **74 candidates, for a target library of about 45.** The surplus is deliberate:
 W04 records a candidate-to-approved count with a reason for every rejection,

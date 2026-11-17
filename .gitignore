@@ -10,7 +10,8 @@ __pycache__/
 
 # node (application under test)
 app/node_modules/
-app/data/db.json 
+app/package-lock.json
+
 # os
 .DS_Store
 Thumbs.db

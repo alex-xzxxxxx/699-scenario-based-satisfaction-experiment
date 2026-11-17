@@ -1,0 +1,26 @@
+id: ACC-01
+use_case: UC5
+category: adversarial
+severity: critical
+preconditions: >
+  Seed state. Task 5 belongs to bob; it is titled "Reply to supplier" and
+  described "Confirm the delivery window". Alice does not own it.
+user_action: Signed in as alice, request bob's task by its URL.
+expected_behaviour: >
+  The response is a 404 page, and no part of bob's task appears anywhere in
+  it — not the title, not the description. A 404 status that still shows the
+  title fails this scenario.
+expected_evidence: >
+  The HTTP status, and the full visible page text, so it can be compared
+  against bob's title and description.
+requirements: R17, R21
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: request
+    path: /tasks/5
+  - do: goto
+    path: /tasks/5
+  - do: capture
+    label: alice requesting bob's task

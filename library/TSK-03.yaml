@@ -1,0 +1,37 @@
+id: TSK-03
+use_case: UC3
+category: failure
+severity: high
+preconditions: Seed state, signed in as alice, who owns four tasks.
+user_action: Open the create form, leave the title empty, and submit.
+expected_behaviour: >
+  The submission is rejected with a visible message, and no task is created —
+  alice still owns four.
+expected_evidence: >
+  The message text, and the number of task rows in alice's list before and
+  after the attempt.
+requirements: R9, R23
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: list before
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: ""
+  - do: fill
+    field: description
+    value: Orphan description
+  - do: click
+    target: create
+  - do: capture
+    label: immediately after submitting
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: list after

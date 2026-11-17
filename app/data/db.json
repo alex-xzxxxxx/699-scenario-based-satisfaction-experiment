@@ -1,0 +1,93 @@
+{
+  "nextUserId": 4,
+  "nextTaskId": 9,
+  "users": [
+    {
+      "id": 1,
+      "username": "alice",
+      "salt": "8b0b4d4a7bf87829bf49b1ca6e4ca4e0",
+      "hash": "a4ad09d945e7346c9bc5036c1ab6a9bd5bdbc6ab1d6cdd7a64040eaec675b458ddfaea95e4aa0b20320d03660ae7449fc95b1af84d02fd3654b473cc274bcb59",
+      "token": "0ef8ff8e5b136b41465e2946b9b30e6f"
+    },
+    {
+      "id": 2,
+      "username": "bob",
+      "salt": "3f45da04572d82e1b57a87e5f7de2bf2",
+      "hash": "7538c515ca386cc64343d9d6c72f4db607d4db2ebf0388948f320152ea8c71eca38c685875331abe097cdbf24b1ae480dbef7c0802a35e24907b7530f981a4ab",
+      "token": "ddcd084d4b7da1728304441f9843b60b"
+    },
+    {
+      "id": 3,
+      "username": "carol",
+      "salt": "145d399758795ae0c9853216fb754938",
+      "hash": "0321954989831321037966a724701b38308e271f2a83ad4816737e83094a8520ba09a404c11b976d16e93e6334dc8e6b682db52ce07d2a96a5937fa1ecfb5adf",
+      "token": "51161718d3c6a94d1675837e95b36418"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "ownerId": 1,
+      "title": "Draft project outline",
+      "description": "Sections and rough word counts",
+      "due": "2026-12-01",
+      "status": "open"
+    },
+    {
+      "id": 2,
+      "ownerId": 1,
+      "title": "Book flights",
+      "description": "Compare two airlines before booking",
+      "due": "2026-12-05",
+      "status": "open"
+    },
+    {
+      "id": 3,
+      "ownerId": 1,
+      "title": "Renew library card",
+      "description": "",
+      "due": "",
+      "status": "completed"
+    },
+    {
+      "id": 4,
+      "ownerId": 1,
+      "title": "Buy printer paper",
+      "description": "A4, two reams",
+      "due": "2026-11-20",
+      "status": "open"
+    },
+    {
+      "id": 5,
+      "ownerId": 2,
+      "title": "Reply to supplier",
+      "description": "Confirm the delivery window",
+      "due": "2026-11-25",
+      "status": "open"
+    },
+    {
+      "id": 6,
+      "ownerId": 2,
+      "title": "Pay invoice 2291",
+      "description": "",
+      "due": "2026-11-18",
+      "status": "completed"
+    },
+    {
+      "id": 7,
+      "ownerId": 2,
+      "title": "Draft budget sheet",
+      "description": "Include travel and printing",
+      "due": "",
+      "status": "open"
+    },
+    {
+      "id": 8,
+      "ownerId": 3,
+      "title": "Collect parcel",
+      "description": "",
+      "due": "2026-11-15",
+      "status": "open"
+    }
+  ]
+}

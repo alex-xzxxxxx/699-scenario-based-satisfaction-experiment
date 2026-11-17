@@ -11,3 +11,4 @@ pandas                # dataset assembly and analysis
 matplotlib            # figures F1-F11
 scikit-learn          # cohen_kappa_score (EQ2)
 statsmodels           # proportion_confint -> Wilson intervals (EQ2, EQ3)
+pyyaml                # scenario library files
