@@ -196,7 +196,105 @@ HTML is not readable, and an unreadable reference is a worse reference.
 EQ2 would be comparing two different tasks.
 **Affects:** T14, T18, T19, T25, T26; EQ2, EQ5; judge token cost.
 
-## D-010 — <next decision>
+## D-010 — Judge model is gemini-3.6-flash, requested by that id
+**Date:** 2026-11-08
+**Decision:** The judge is Gemini `gemini-3.6-flash`. It is requested by that
+exact id, never by `gemini-3.5-flash` and never by an alias such as
+`gemini-flash-latest`.
+
+**Reason — the requested id does not pin the model.** The T02 smoke test
+(`records/W01/judge-smoke-test.json`) requested `gemini-3.5-flash` ten times
+and the API answered with `modelVersion: gemini-3.6-flash` every time, with
+nothing in the response signalling the substitution. Requesting
+`gemini-3.6-flash` returns `gemini-3.6-flash`. Same model served either way,
+but only one of the two ids tells the truth in the record, and the freeze at
+M5 depends on being able to say which model produced each judgment.
+
+Aliases ending in `-latest` are excluded for the same reason, more strongly:
+they are documented to move. The 540 judgments run across Weeks 7 and 8 with a
+two-week break between them, so an alias could point at one model before the
+break and another after it, splitting the dataset between two judges with no
+record of where the split fell.
+
+**Mechanical result:** fifteen successful calls across the two smoke runs, all
+returning valid JSON with the identical verdict at temperature 0; median
+latency 2.4 s. The failures observed were quota, not model behaviour.
+
+**Threat, to be reported:** a served model that differs from the requested one,
+silently, is itself a finding for a study about when an LLM judge can be
+trusted. It belongs in the threats section, not only in this log.
+
+**Affects:** T18, T25; EQ2, EQ3, EQ5.
+
+## D-011 — The judge run is resumable, quota-aware, and version-checked
+**Date:** 2026-11-08
+**Decision:** `judge.py` must:
+1. cache every response, keyed by run id and judgment index, and skip completed
+   work on restart;
+2. record `modelVersion` on **every one** of the 540 calls, not once at the
+   start, and halt if it ever changes mid-run;
+3. pace requests, retry a 429 with backoff, and on a 429 that does not clear,
+   stop cleanly and report how far it reached rather than burning retries.
+
+**Reason:** the smoke test hit the free-tier quota after roughly twenty calls
+in one evening, and backing off 8 s then 16 s did not clear it, so the limit is
+not only a per-minute burst. 540 calls will therefore span several days. A
+single long-running process cannot be assumed to survive that, and a crash
+halfway through must not mean re-judging from zero. The proposal anticipated
+this: judge runs are to be "spread over several days rather than done in one
+sitting" (§4.12). Point 2 follows from D-010.
+
+**Still open (O5):** the free-tier RPM and RPD for `gemini-3.6-flash`, to be
+read at ai.dev/rate-limit. 540 calls at 1000 RPD is one day; at 50 RPD it is
+eleven, which would move judging to start before the 21 Dec – 3 Jan break
+rather than after it.
+
+**Affects:** T18, T25; Week 7–8 scheduling.
+
+## D-012 — Requirements v1.1: ambiguities closed before V0 is generated
+**Date:** 2026-11-16
+**Decision:** `app/REQUIREMENTS.md` goes to v1.1 before V0 is generated. Seven
+new requirements (R24–R30), eleven clarifications to existing ones, and three
+new constraints in section 1. R1–R23 keep their numbers, so the use-case
+mapping holds; the new ones are appended.
+
+**Reason:** a review of v1.0 found sixteen points where two competent
+implementations would reasonably differ. Since the document states that nothing
+outside it is part of the specification, each gap would have produced
+disagreement between suite A, suite B and the judge for reasons unrelated to
+the application's quality — noise in exactly the measurements EQ2 and EQ4 are
+made of.
+
+Three mattered more than the rest:
+- **Storage caching.** v1.0 required `npm run reset` before each test but never
+  said the server must re-read from disk. An implementation that cached
+  `data/db.json` in memory would have made reset a no-op, and every test after
+  the first would have run on contaminated state — silently, with the suite
+  still passing. v1.1 requires a disk read per request.
+- **Toggle authorisation.** `/tasks/:id/toggle` is a write and no requirement
+  covered it; only the general R21 applied. Now R24.
+- **Distinguishable 404s.** R17 demanded a 404 for another user's task but said
+  nothing about ids that do not exist, so sequential ids could be enumerated by
+  comparing responses. Now R25.
+
+**Left unresolved on purpose:** R2 reveals whether a username exists, while R5
+conceals it. That is a genuine tension in the specification, not an oversight,
+and it is reported in the final report rather than patched.
+
+**Still unspecified on purpose:** how thorough suite A should be (see D-003 and
+the T05 notes). Fixing its form keeps it comparable with suite B; fixing its
+coverage would answer EQ4 by instruction.
+
+**Ordering note.** Several of these ambiguities are good candidates for seeded
+defects. They are not chosen now. Defects are selected and registered at T16 in
+Weeks 5–6, *after* the scenario library is frozen at T12, so that scenarios are
+derived from the use cases and never written to target a defect that is already
+known.
+
+**Affects:** T05, T06, T07, T10, T11, T16; EQ2, EQ4, EQ5.
+**Cannot change after:** V0 is tagged at M2.
+
+## D-013 — <next decision>
 **Date:**
 **Decision:**
 **Reason:**

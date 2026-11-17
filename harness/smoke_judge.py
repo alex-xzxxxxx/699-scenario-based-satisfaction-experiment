@@ -89,20 +89,27 @@ def post(url, payload):
         return json.loads(r.read().decode("utf-8"))
 
 
-def post_retrying(url, payload, attempts=3):
-    """POST, backing off on 429.
+# 429 = your quota. 503 = the model is overloaded on Google's side; the error
+# body says "Spikes in demand are usually temporary. Please try again later."
+# Both are retryable and neither says anything about judgment quality, but they
+# are different problems with different fixes, so they are counted separately.
+RETRYABLE = {429: "quota", 503: "overloaded"}
 
-    A 429 that clears on retry is a pacing problem, not an unreliable model.
-    The two are reported separately, because only the second one disqualifies
-    a judge. Returns (response, retries_used).
+
+def post_retrying(url, payload, attempts=5):
+    """POST, backing off on 429 and 503.
+
+    Returns (response, {429: n, 503: n}) counting retries by cause.
     """
-    delay = 8.0
+    counts = {429: 0, 503: 0}
+    delay = 6.0
     for attempt in range(1, attempts + 1):
         try:
-            return post(url, payload), attempt - 1
+            return post(url, payload), counts
         except urllib.error.HTTPError as e:
-            if e.code != 429 or attempt == attempts:
+            if e.code not in RETRYABLE or attempt == attempts:
                 raise
+            counts[e.code] += 1
             wait = delay
             retry_after = e.headers.get("Retry-After") if e.headers else None
             if retry_after:
@@ -110,7 +117,8 @@ def post_retrying(url, payload, attempts=3):
                     wait = max(wait, float(retry_after))
                 except ValueError:
                     pass
-            print(f"       429, waiting {wait:.0f}s then retrying")
+            print(f"       {e.code} {RETRYABLE[e.code]}, waiting {wait:.0f}s "
+                  f"(attempt {attempt}/{attempts - 1})")
             time.sleep(wait)
             delay *= 2
     raise RuntimeError("unreachable")
@@ -180,7 +188,9 @@ def smoke(key, model, runs, sleep):
     }
 
     results, latencies, errors = [], [], []
-    versions, throttled = [], 0
+    versions = []
+    retried = {429: 0, 503: 0}
+    failed = {429: 0, 503: 0, "other": 0}
 
     for i in range(1, runs + 1):
         if i > 1 and sleep:
@@ -188,13 +198,16 @@ def smoke(key, model, runs, sleep):
         t0 = time.time()
         try:
             resp, retries = post_retrying(url, payload)
-            throttled += retries
+            for code, n in retries.items():
+                retried[code] += n
         except urllib.error.HTTPError as e:
-            body = e.read().decode("utf-8", "replace")[:300]
+            body = e.read().decode("utf-8", "replace")[:160].replace("\n", " ")
+            failed[e.code if e.code in failed else "other"] += 1
             errors.append(f"run {i}: HTTP {e.code} {body}")
-            print(f"  run {i:>2}  HTTP {e.code}")
+            print(f"  run {i:>2}  HTTP {e.code} gave up after retries")
             continue
         except Exception as e:                      # noqa: BLE001
+            failed["other"] += 1
             errors.append(f"run {i}: {type(e).__name__} {e}")
             print(f"  run {i:>2}  {type(e).__name__}")
             continue
@@ -231,7 +244,11 @@ def smoke(key, model, runs, sleep):
         "valid_json": f"{len(valid)}/{runs}",
         "verdicts": {v: valid.count(v) for v in distinct},
         "stable_under_repetition": len(distinct) == 1,
-        "throttle_retries": throttled,
+        "retries_that_recovered": {"429_quota": retried[429],
+                                   "503_overloaded": retried[503]},
+        "calls_lost_after_retries": {"429_quota": failed[429],
+                                     "503_overloaded": failed[503],
+                                     "other": failed["other"]},
         "latency_seconds": {
             "median": round(statistics.median(latencies), 2) if latencies else None,
             "max": round(max(latencies), 2) if latencies else None,
@@ -257,10 +274,17 @@ def smoke(key, model, runs, sleep):
     print(f"  one served model throughout .......... "
           f"{'PASS' if len(seen_versions) <= 1 else 'FAIL'}")
     print("  RPD high enough for 540 calls ........ read it in AI Studio")
-    if throttled:
-        print(f"\n  {throttled} call(s) hit a rate limit and succeeded on retry. "
-              "That is pacing,\n  not an unreliable model. Raise --sleep for the "
-              "real run.")
+    if retried[429] or retried[503]:
+        print(f"\n  Recovered by retry: {retried[429]} quota (429), "
+              f"{retried[503]} overload (503).")
+    if failed[503]:
+        print(f"\n  {failed[503]} call(s) still failed with 503 after retries. "
+              "503 is Google's\n  capacity, not your quota - a busy model, or "
+              "free-tier requests being\n  shed under load. A quieter or older "
+              "model may behave far better.")
+    if failed[429]:
+        print(f"\n  {failed[429]} call(s) still failed with 429 after retries. "
+              "That is your daily\n  quota, and no amount of pacing fixes it.")
     if rerouted:
         print(f"\n  NOTE  you requested '{model}' but the API served "
               f"{seen_versions}.\n  The requested id does not pin the model. "
