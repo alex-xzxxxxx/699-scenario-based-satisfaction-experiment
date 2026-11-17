@@ -1,3 +1,13 @@
 model name : Claude Opus 5.5
 version string: claude-opus-5-5 
 regeneration count: uncertain
+
+P-001 — V0 and suite A generation
+Sent 2026-11-16 to Claude Opus 5.5 in a fresh session carrying nothing else.
+
+--- message sent ---
+Build this application. Follow the requirements exactly.
+
+[followed by the complete text of app/REQUIREMENTS.md as at tag req-v1.1,
+ pasted verbatim into the chat]
+--- end of message ---
