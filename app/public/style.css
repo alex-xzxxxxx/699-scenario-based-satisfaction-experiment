@@ -1,0 +1,24 @@
+body { font-family: system-ui, sans-serif; max-width: 46rem; margin: 1.5rem auto; padding: 0 1rem; line-height: 1.45; color: #1f2328; }
+header { display: flex; gap: 1rem; align-items: center; border-bottom: 1px solid #d0d7de; padding-bottom: .5rem; margin-bottom: 1rem; }
+header .brand { font-weight: 600; margin-right: auto; text-decoration: none; color: inherit; }
+header form { margin: 0; }
+.message:empty { display: none; }
+.message { padding: .5rem .75rem; border-radius: 4px; background: #ddf4ff; border: 1px solid #54aeff; margin-bottom: 1rem; }
+.message.error { background: #ffebe9; border-color: #ff8182; }
+.message p { margin: .15rem 0; }
+label { display: block; margin-top: .75rem; font-weight: 500; }
+input[type=text], input[type=password], textarea, select { font: inherit; padding: .35rem .5rem; width: 100%; box-sizing: border-box; }
+textarea { min-height: 5rem; }
+button { font: inherit; padding: .35rem .9rem; margin-top: .75rem; cursor: pointer; }
+.search { display: flex; gap: .5rem; align-items: end; flex-wrap: wrap; }
+.search input, .search select { width: auto; }
+.search button { margin-top: 0; }
+ul.tasks { list-style: none; padding: 0; }
+ul.tasks li a { display: flex; gap: 1rem; padding: .5rem; border-bottom: 1px solid #eaeef2; text-decoration: none; color: inherit; }
+ul.tasks li a:hover { background: #f6f8fa; }
+.title { flex: 1; }
+.status.completed, .task-status.completed { color: #1a7f37; }
+.muted { color: #656d76; }
+.actions { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+.actions form { margin: 0; }
+.desc { white-space: pre-wrap; }
