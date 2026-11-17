@@ -1,0 +1,3 @@
+model name : Claude Opus 5.5
+version string: claude-opus-5-5 
+regeneration count: uncertain
