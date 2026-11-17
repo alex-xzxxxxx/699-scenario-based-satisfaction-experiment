@@ -1,0 +1,34 @@
+{
+  "checked": "2026-11-10 20:45:48 -0500",
+  "model_requested": "gemini-3.6-flash",
+  "model_versions_returned": [
+    "gemini-3.6-flash"
+  ],
+  "rerouted": false,
+  "served_model_stable_within_run": true,
+  "runs": 25,
+  "seconds_between_calls": 15.0,
+  "valid_json": "15/25",
+  "verdicts": {
+    "not_satisfied": 15
+  },
+  "stable_under_repetition": true,
+  "throttle_retries": 1,
+  "latency_seconds": {
+    "median": 3.08,
+    "max": 11.09
+  },
+  "errors": [
+    "run 2: HTTP 503 {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+    "run 3: HTTP 503 {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+    "run 8: HTTP 503 {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+    "run 12: HTTP 503 {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+    "run 13: HTTP 503 {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+    "run 15: HTTP 503 {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+    "run 21: HTTP 503 {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+    "run 22: HTTP 429 {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceede",
+    "run 23: HTTP 503 {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+    "run 25: HTTP 503 {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n"
+  ],
+  "rpd": "READ IN GOOGLE AI STUDIO - not available from the API"
+}
