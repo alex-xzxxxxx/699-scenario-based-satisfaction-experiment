@@ -65,53 +65,74 @@ All seven must hold:
 
 ## 4. Severity profiles, and why EQ1 depends on them
 
-EQ1 asks whether the weighting scheme changes the ranking of versions. **If
-the versions are built carelessly, EQ1 cannot be answered at all** — the two
-schemes will simply agree, and the question has no data.
+**What a version scores is not a property of its defects.** D-005 computes
+four schemes per version — binary, linear 4-3-2-1, geometric 8-4-2-1, and the
+critical gate as a separate flag — over the **scenarios the version fails**,
+weighted by **each scenario's own severity**, which T11 assigned and `v0`
+froze. A defect is only the cause. The lever this section controls is
+therefore *which frozen scenarios a version breaks*, and the library already
+fixes what each is worth:
 
-Table 8 weights:
+| Severity | Scenarios in the library | Binary | Linear | Geometric |
+|---|---|---|---|---|
+| Critical | 8 | 1 | 4 | 8 |
+| High | 15 | 1 | 3 | 4 |
+| Medium | 19 | 1 | 2 | 2 |
+| Low | 5 | 1 | 1 | 1 |
 
-| Severity | Linear | Geometric |
-|---|---|---|
-| Critical | 4 | 8 |
-| High | 3 | 4 |
-| Medium | 2 | 2 |
-| Low | 1 | 1 |
+The eight critical scenarios are ACC-01, ACC-02, ACC-03, ACC-04, ACC-06,
+ACC-10, SES-05 and SES-08. Four of them turn on the ownership check in R21, so
+a single defect there moves a version's critical count by four at once. That
+is the largest single lever in the library and it is easy to pull by accident.
 
-Geometric separates critical from high by a factor of two where linear
-separates them by a third. So the schemes disagree whenever one version
-carries its weight in a few severe defects and another carries it in more mild
-ones. The smallest disagreement:
+### The comparison EQ1 actually makes
 
-| | Defects | Linear total | Geometric total |
-|---|---|---|---|
-| Version A | 1 critical | 4 | 8 |
-| Version B | 1 high + 1 medium | 5 | 6 |
+EQ1 asks whether severity weighting changes conclusions **versus binary
+scoring**. The primary contrast is binary against the weighted schemes, not
+linear against geometric. Binary counts failures; the weighted schemes care
+what failed. They part company when one version fails fewer but more severe
+scenarios than another:
 
-Linear ranks B worse; geometric ranks A worse. A more robust pair:
+| | Scenarios failed | Binary | Linear | Geometric |
+|---|---|---|---|---|
+| Version A | 4 critical, 4 high, 4 medium | 12 | 36 | 56 |
+| Version B | 2 high, 6 medium, 6 low | 14 | 24 | 26 |
 
-| | Defects | Linear total | Geometric total |
+Binary ranks B worse. Both weighted schemes rank A worse. That inversion is
+the observation EQ1 exists to make, and it survives realistic counts — these
+are the ten-to-fifteen failing runs per version that §5 arrives at
+independently.
+
+A secondary question is whether the two weighted schemes agree with each
+other. They part company less easily, since geometric only doubles the gap
+above medium:
+
+| | Scenarios failed | Linear | Geometric |
 |---|---|---|---|
 | Version A | 2 critical | 8 | 16 |
 | Version B | 3 high | 9 | 12 |
 
-**Requirement: the three severity profiles are fixed before any defect is
-chosen, and at least one pair of versions must rank differently under the two
-schemes.** Then defects are selected to fit the profiles, not the other way
-round.
+**Requirement: the three profiles are fixed before any defect is chosen, and
+binary must invert against the weighted schemes for at least one pair of
+versions.** A linear-geometric inversion as well is desirable, not required —
+with three versions there are only three pairs, and forcing both may not be
+reachable without contorting the defect sets.
 
-**This must be disclosed, and it limits the claim.** The disagreement is
-constructed, not discovered. The finding can therefore never be "the two
-schemes often disagree" — only "where they disagree, here is what happens to
-the ranking, and here is whether the judge tracks it." Reporting a manufactured
-disagreement as an empirical frequency would be a serious misreading of the
-design, and the report says so in the same place it reports EQ1.
+Because the profiles are expressed as target sets of failing scenarios, and
+`predicted_scenarios` in §6 records the same thing per defect, the two must
+agree before a version is built. A defect set whose predictions do not add up
+to its version's profile means one of the two is wrong.
 
-**Open, to settle against T20 before profiles are fixed:** the tables above
-assume a version's score moves with the summed weight of the scenarios it
-fails. If T20's scoring engine composes weights differently, the arithmetic
-changes and the profiles must be recomputed against the real formula. The
-principle does not change.
+**This is constructed, and it bounds the claim.** The inversion is designed in,
+not discovered. EQ1 may therefore never report that weighting "often" changes
+conclusions — only that where it does, here is what happens to the ranking and
+whether the judge tracks it. Reporting a manufactured inversion as an empirical
+frequency would misread the design, and the report says so where it reports
+EQ1.
+
+**Still open, to settle before profiles are fixed:** whether T20 sums scenario
+weights as assumed above, and how a scenario the judge and the human disagree
+about enters the total. The principle is unaffected; the arithmetic is not.
 
 ## 5. How many
 
@@ -141,7 +162,7 @@ built:
 | `defect_id` | at design | D1-01, D2-01, … by version |
 | `version` | at design | V1, V2 or V3 |
 | `requirement` | at design | the R-number violated |
-| `severity` | at design | from Table 8, with the sentence justifying it |
+| `severity` | at design | the **defect's** own Table 8 severity, with the sentence justifying it. Distinct from the severities of the scenarios it breaks, which are what §4 scores. They usually agree; where they do not, say so in the row — a low-severity defect that breaks a critical scenario is worth noticing, not smoothing over |
 | `location` | at design | file and function |
 | `change` | at design | one sentence: what the code now does instead |
 | `predicted_scenarios` | at design, **before any run** | which frozen scenarios should expose it |
@@ -187,8 +208,11 @@ suggests, and the report says so.
 
 ## 9. Order of work
 
-1. Confirm the scoring arithmetic in §4 against T20.
-2. Fix the three severity profiles. Record them.
+1. Confirm the scoring arithmetic in §4 against T20. T20 does not exist yet,
+   so this means settling how a version's four totals are computed before the
+   profiles depend on them — a slice of T20 pulled earlier than planned.
+2. Fix the three profiles, as target sets of failing scenarios by severity,
+   with the binary inversion of §4 present. Record them.
 3. Only then select defects to fit the profiles, under §1-§3.
 4. Register each one, including `predicted_scenarios`, before building.
 5. Build V1, V2, V3 from tag `v0`.
