@@ -25,6 +25,7 @@ downstream of it.
 | D-011 | 2026-11-08 | 2 | Judge run is resumable, quota-aware, version-checked | T18, T25; Week 7–8 pacing | — |
 | D-012 | 2026-11-16 | 4 | Requirements v1.1 closes 16 ambiguities before V0 | T05–T07, T10, T11, T16; EQ2, EQ4, EQ5 | V0 tagged (M2) ✓ |
 | D-013 | 2026-11-17 | 4 | EQ4 re-scoped to what each method can find, not how much | T16, T26, T30–T33; EQ4 | First judge run (T25) |
+| D-014 | 2026-11-17 | 5 | Evidence records an allowlist of response headers; `network.jsonl` scrubbed | T14, T15, T24, T25; SES-13 | First judge run (T25) |
 
 ---
 
@@ -400,7 +401,60 @@ against the scenario method.
 as are the D-005 thresholds and the D-009 evidence format.
 **Cannot change after:** the first judge run of the main experiment (T25).
 
-## D-014 — <next decision>
+## D-014 — The evidence records response headers, from an allowlist
+**Date:** 2026-11-17
+**Decision:** The collector copies an allowlist of response headers into
+`network.jsonl`, starting with `cache-control`, and `network.jsonl` is now
+scrubbed like every other file in a bundle. This amends T14, which W04 records
+as complete.
+
+**Reason:** SES-13 asks whether a protected page is still reachable with the
+browser Back button after signing out, and R28 answers it with
+`Cache-Control: no-store`. Behaviour alone cannot settle it. A page that was
+never stored and a page that was stored but happens not to be redrawn look
+identical from outside the browser, and which one the application produced is
+exactly the difference R28 is about. Without the header, SES-13 would be
+judged against evidence that could not contain its answer, in all four
+versions — a false negative built into the instrument rather than observed in
+the system.
+
+### Why an allowlist and not every header
+
+Copying every header would cost more than it returns. D-009 keeps a bundle
+small enough that the whole judge run fits a free tier, and most headers —
+`date`, `etag`, content lengths, the server's own name — say nothing about
+whether a scenario was satisfied while giving a judge more text to wander
+through. The list is a constant in `harness/runner/runner.py` and takes one
+line to extend when a later requirement needs another header.
+
+### The scrubbing that came with it
+
+`network.jsonl` was the one file in a bundle written without scrubbing. That
+was harmless while an entry held only a status and a relative path. It stops
+being harmless the moment the server's own output is copied through, so the
+entries now pass through the same `_scrub` as the trace, the console log and
+the final state. This is a correction to T14 rather than a new feature, and it
+is recorded here rather than folded into the change above.
+
+### Cost, measured
+
+Re-running the whole library after the change: `trace.json` is unchanged at a
+median of 2,929 bytes, because headers go to `network.jsonl`; that file has a
+median of 900 bytes and a maximum of 2,569; the complete evidence for 47 runs
+is 294 KB. The D-009 budget is not touched.
+
+### Timing
+
+Made before T12 freezes the library and before any V1, V2 or V3 run exists, so
+no judged data was produced under the old format and none has to be discarded.
+Changing the evidence format after the main run had started would have been a
+different and much worse decision.
+
+**Affects:** T14, T15, T24, T25; SES-13; EQ2 and EQ3 through it.
+**Cannot change after:** the first judge run of the main experiment (T25),
+with D-013.
+
+## D-015 — <next decision>
 **Date:**
 **Decision:**
 **Reason:**

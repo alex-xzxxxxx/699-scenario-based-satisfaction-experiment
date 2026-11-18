@@ -30,6 +30,30 @@ from harness.runner import steps as step_helpers  # noqa: E402
 
 DEFAULT_URL = "http://localhost:3000"
 
+# Response headers copied into the evidence. An allowlist, deliberately, not
+# every header: D-009 keeps a bundle small enough that 540 judge calls fit the
+# free tier, and a blanket copy would put server, timing and caching detail in
+# front of the judge that says nothing about whether the scenario was
+# satisfied. The list is not empty because R28 cannot be judged from behaviour
+# alone — a page that is absent after Back and a page that was never stored
+# look the same from the outside, and only the header separates them (D-014).
+RECORDED_HEADERS = ("cache-control",)
+
+
+def _record_response(network: list[dict], base_url: str, response) -> None:
+    """Note one response. Like every other part of the runner, this records
+    and does not judge: it copies the header through, it does not check it."""
+    entry = {"status": response.status,
+             "url": response.url.replace(base_url, "")}
+    try:
+        headers = response.headers
+    except Exception:  # noqa: BLE001 - the response may already be gone
+        headers = {}
+    picked = {k: headers[k] for k in RECORDED_HEADERS if k in headers}
+    if picked:
+        entry["headers"] = picked
+    network.append(entry)
+
 
 def _playwright():
     """Imported on demand, so --check validates the library on a machine with
@@ -166,8 +190,8 @@ def main() -> int:
             context = browser.new_context(base_url=a.base_url)
             page = context.new_page()
             page.on("console", lambda m: console.append(f"[{m.type}] {m.text}"))
-            page.on("response", lambda r: network.append(
-                {"status": r.status, "url": r.url.replace(a.base_url, "")}))
+            page.on("response",
+                    lambda r: _record_response(network, a.base_url, r))
             try:
                 bundle = run_one(sc, page, a.base_url, a.version,
                                  console, network, not a.no_screenshots)

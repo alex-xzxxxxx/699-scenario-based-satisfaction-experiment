@@ -193,7 +193,12 @@ class Bundle:
         if network:
             with (self.dir / "network.jsonl").open("w", encoding="utf-8") as fh:
                 for entry in network:
-                    fh.write(json.dumps(entry) + "\n")
+                    # Scrubbed like every other file in the bundle. Until
+                    # D-014 this held only a status and a relative path and
+                    # the raw write was harmless; now that response headers
+                    # come through, anything the server echoes is scrubbed
+                    # before it can reach a blind judge.
+                    fh.write(_scrub(json.dumps(entry)) + "\n")
 
         MANIFEST.parent.mkdir(parents=True, exist_ok=True)
         with MANIFEST.open("a", encoding="utf-8") as fh:
