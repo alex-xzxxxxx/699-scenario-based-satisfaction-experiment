@@ -26,6 +26,7 @@ downstream of it.
 | D-012 | 2026-11-16 | 4 | Requirements v1.1 closes 16 ambiguities before V0 | T05–T07, T10, T11, T16; EQ2, EQ4, EQ5 | V0 tagged (M2) ✓ |
 | D-013 | 2026-11-17 | 4 | EQ4 re-scoped to what each method can find, not how much | T16, T26, T30–T33; EQ4 | First judge run (T25) |
 | D-014 | 2026-11-17 | 5 | Evidence records an allowlist of response headers; `network.jsonl` scrubbed | T14, T15, T24, T25; SES-13 | First judge run (T25) |
+| D-015 | 2026-11-17 | 5 | Scores are per judgment source; no blended score | T16, T20, T25–T28; EQ1–EQ4 | First judge run (T25) |
 
 ---
 
@@ -454,7 +455,50 @@ different and much worse decision.
 **Cannot change after:** the first judge run of the main experiment (T25),
 with D-013.
 
-## D-015 — <next decision>
+## D-015 — Scores are per judgment source; no blended score exists
+**Date:** 2026-11-17
+**Decision:** A version does not have a satisfaction score. It has four
+numbers *per judgment source* — human reference, LLM judge, suite A, suite B
+— computed over the scenarios that source judged not satisfied, weighted by
+each **scenario's** frozen severity. Satisfaction is reported as a percentage
+of the library total (binary 47, linear 120, geometric 167). The full
+definition, with the exclusion and comparison rules, is `analysis/scoring.md`.
+
+**Reason:** T16 asked how a scenario the judge and the human disagree about
+enters a version's total. The answer is that it does not: it enters two
+totals, one per source. Any blended or consensus score would average away the
+disagreement EQ2 exists to measure, and would do it silently, inside a number
+that still looks like a result.
+
+Three rules follow, and each prevents a specific error:
+
+- **A missing verdict is never read as satisfied.** Invalid JSON after the
+  D-011 retries, or an unresolved quota failure, is excluded and counted, not
+  rounded down to "fine". Reading the judge's own failures as evidence that
+  the software works is the most dangerous rounding available here, and it
+  would bias exactly the direction EQ3 is trying to detect.
+- **Exclusions break the denominator**, so where any exist the numbers are
+  also reported on the common subset of scenarios that produced a verdict in
+  all four versions, with the subset size stated.
+- **Cross-source comparisons run on the intersection of runs.** The human
+  judges about 25 runs and the judge judges 188. Both come out as percentages
+  on the same scale, which makes comparing them directly an easy and
+  invisible mistake.
+
+**Settled here because T16 needed it.** The severity profiles for V1-V3 have
+to produce a binary-versus-weighted inversion, and that constraint cannot be
+checked without knowing how the totals are formed. Taking the arithmetic as
+assumed would have put the error in the built versions, where it could only
+be found after V1-V3 were tagged and possibly judged — at which point the
+versions cannot be rebuilt without discarding the runs.
+
+**Not settled here:** the engine itself (T20), interval reporting (T28), and
+the EQ2 agreement statistic (D-004, T27).
+
+**Affects:** T16, T20, T25, T26, T27, T28; EQ1, EQ2, EQ3, EQ4.
+**Cannot change after:** the first judge run of the main experiment (T25).
+
+## D-016 — <next decision>
 **Date:**
 **Decision:**
 **Reason:**
