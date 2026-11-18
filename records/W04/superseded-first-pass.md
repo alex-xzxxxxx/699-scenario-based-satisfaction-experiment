@@ -1,3 +1,41 @@
+# Superseded — first-pass scenario validation
+
+**This is not the T11 record.** The validation of record is
+`scenarios/validation.md`, with `scenarios/validation.csv` beside it. This file
+is kept only so the revision is visible rather than silently discarded.
+
+Four problems made this pass unusable:
+
+1. **Severity.** 20 of the 59 accepted scenarios were marked Critical,
+   including creating a task with a valid title and combining a search with a
+   status filter. Table 8 reserves Critical for a failure that would expose or
+   corrupt another user's data or break login security. D-005 flags a version
+   unacceptable if it fails any critical scenario, so at that density the gate
+   fires on every version and separates nothing; and every linear-4 and
+   geometric-8 weight shifts, which is the subject of EQ1.
+2. **Category.** The values used were Core Workflow, Access Control,
+   Validation and Accounts & Sessions. Table B3's distribution is defined over
+   normal, failure, edge, adversarial/robustness and integration, so no
+   distribution check was possible. The values were also inconsistent — a
+   substring search was tagged Access Control, a direct request for another
+   user's task was tagged Core Workflow.
+3. **Checklist.** Table B4 item 4, "traceable to the requirements document",
+   was replaced by a "clear intent" column that is not in the checklist, and
+   no requirement ids were recorded at all. Item 4 is what EQ4 needs: scenario
+   coverage can only be compared against suite A and suite B if each scenario
+   names the requirements it exercises.
+4. **Rejections.** 13 of the 15 rejected scenarios were never candidates —
+   pixel alignment, query latency, favicon loading, HTML indentation, packet
+   drops, and three scenarios written expressly as duplicates. Of the 74 real
+   candidates, effectively all were accepted.
+
+The replacement judges all 74 real candidates against the five Table B4 items,
+keeps the severity assigned at drafting time, uses Table B3's categories, and
+records requirement ids on every row: 47 accepted, 27 rejected.
+
+---
+
+```csv
 scenario_id,title,category,severity,table_b4_clear_intent,table_b4_observable,table_b4_reader_agreement,table_b4_reliable,table_b4_non_duplicate,decision,rejection_reason
 SCN-001,Register new account with valid trimmed username and untrimmed password,Accounts & Sessions,Medium,Yes,Yes,Yes,Yes,Yes,ACCEPTED,
 SCN-002,Register duplicate username with different casing,Accounts & Sessions,Medium,Yes,Yes,Yes,Yes,Yes,ACCEPTED,
@@ -73,3 +111,4 @@ SCN-071,Duplicate check of R04 case-insensitive username signin,Core Workflow,Lo
 SCN-072,Duplicate check of R09 blank title rejection on create,Validation,Low,Yes,Yes,Yes,Yes,No,REJECTED,"Fails Table B4 non-duplication; exact duplicate of SCN-011."
 SCN-073,Duplicate check of R17 viewing another user task returns 404,Core Workflow,Low,Yes,Yes,Yes,Yes,No,REJECTED,"Fails Table B4 non-duplication; exact duplicate of SCN-029."
 SCN-074,Verify session referencing deleted user account is invalidated,Access Control,Medium,Yes,No,No,No,Yes,REJECTED,"Fails Table B4 observable execution; R27 user deletion is out of scope in §7 so state is unreachable."
+```
