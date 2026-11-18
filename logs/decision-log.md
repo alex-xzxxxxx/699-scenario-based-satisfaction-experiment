@@ -4,8 +4,27 @@ Every decision that could change a result is recorded here, with the reason and
 the date. Required by proposal §5.6 and commitment C10. Append only; if a
 decision is reversed, add a new entry rather than editing the old one.
 
-| ID    | Date       | Decision | Reason | Affects |
-|-------|------------|----------|--------|---------|
+The table is an index for lookup only — the reasoning for each decision is in
+its own entry below. **Locked after** carries the entry's own "Cannot change
+after" condition where it states one; ✓ marks a condition that has already
+passed, so the decision can no longer be revisited without invalidating work
+downstream of it.
+
+| ID | Date | Wk | Decision | Affects | Locked after |
+|---|---|---|---|---|---|
+| D-001 | 2026-10-29 | 1 | Term compressed from 14 weeks to 13 | M1–M8; re-judgment gap | — |
+| D-002 | 2026-11-08 | 2 | Stack is Node/Express + plain HTML/JS | T05, T06, T16 | V0 tagged (M2) ✓ |
+| D-003 | 2026-11-08 | 2 | Both baselines are browser-level Playwright tests | T05, T07, T08, T24; EQ4 | — |
+| D-004 | 2026-11-08 | 2 | Success thresholds fixed before any data exists | T26–T28; EQ2 | — |
+| D-005 | 2026-11-08 | 2 | Critical-failure gate is a flag beside the scores | T20, T26, T28, T29; EQ1–EQ3 | — |
+| D-006 | 2026-11-08 | 2 | Thresholds set by one researcher, declared as a limitation | Report threats; C06 | — |
+| D-007 | 2026-11-08 | 2 | Claude implements, Gemini judges | T02, T18, T25; EQ2, EQ3 | — |
+| D-008 | 2026-11-08 | 2 | Requirements mandate stable test selectors | T05, T06, T13, T15; EQ4, EQ5 | — |
+| D-009 | 2026-11-08 | 2 | Evidence is a compact trace, not raw HTML | T14, T18, T19, T25, T26; EQ2, EQ5 | — |
+| D-010 | 2026-11-08 | 2 | Judge model is `gemini-3.6-flash`, requested by that id | T18, T25; EQ2, EQ3, EQ5 | — |
+| D-011 | 2026-11-08 | 2 | Judge run is resumable, quota-aware, version-checked | T18, T25; Week 7–8 pacing | — |
+| D-012 | 2026-11-16 | 4 | Requirements v1.1 closes 16 ambiguities before V0 | T05–T07, T10, T11, T16; EQ2, EQ4, EQ5 | V0 tagged (M2) ✓ |
+| D-013 | 2026-11-17 | 4 | EQ4 re-scoped to what each method can find, not how much | T16, T26, T30–T33; EQ4 | First judge run (T25) |
 
 ---
 
@@ -294,7 +313,94 @@ known.
 **Affects:** T05, T06, T07, T10, T11, T16; EQ2, EQ4, EQ5.
 **Cannot change after:** V0 is tagged at M2.
 
-## D-013 — <next decision>
+## D-013 — EQ4 is re-scoped: what each method can find, not how much
+**Date:** 2026-11-17
+**Decision:** EQ4 stops measuring a detection delta between the scenario
+method and a conventional suite, and starts measuring which *kinds* of finding
+each method is capable of producing. The pre-registered thresholds set in
+D-005 are not touched, and no other evaluation question changes.
+
+**Reason:** the premise EQ4 was built on does not hold for this artefact, and
+my own baseline is what demonstrates that.
+
+EQ4 was drawn from the reported finding that machine-generated test suites
+systematically under-cover requirements. The question only has force while the
+conventional baseline is weak: if suite A is thin, anything the scenario
+method finds that suite A misses is evidence for the scenario method. Suite A,
+written by hand in Week 2 against the frozen specification, came out at 230
+assertions referencing all thirty requirements, and passes on V0. Suite B is
+25 tests written independently and also passes. The baseline is not thin.
+
+### Why the premise failed here
+
+This is a property of the setup, not a correction to the literature. Three
+reasons, all mine:
+
+- **The specification is unusually complete.** D-012 closed sixteen
+  ambiguities before V0 was generated. The thin suites reported in the
+  literature are written against thin or implicit specifications.
+- **The requirements are numbered.** Suite A was written against an explicit
+  checklist. Covering a list is a different task from inferring what is worth
+  testing.
+- **The system is small.** Thirty requirements over five use cases can be
+  covered exhaustively. The cited work uses codebases where that is not
+  feasible.
+
+So the premise is scope-dependent and this artefact sits outside the scope
+where it holds. That goes in the report as a limitation of the design.
+
+### The new measure
+
+Every finding produced by any method is classified:
+
+| Class | What it is | Which methods can produce it |
+|---|---|---|
+| A | Behaviour contradicts an explicit requirement | suites, scenarios, judge |
+| B | The requirement is silent or ambiguous; two reasonable implementations differ | scenarios and judge; a suite only by accident |
+| C | Behaviour meets the letter of the requirement but not the scenario's expected behaviour | scenarios and judge only |
+
+A test suite can only produce class A by construction. An assertion *is* a
+decided expectation, so it cannot register that the expectation was never
+decided. A scenario carries its expected behaviour in prose and the judge
+reads that against the evidence, so B and C are reachable.
+
+This stays falsifiable. If the 47 scenarios across four versions yield no
+class B or C finding that the suites missed, the re-scoped EQ4 answers *no*,
+and that is reported as the result.
+
+### The evidence that cuts against the re-scoping
+
+The two class-B findings in hand — the undefined post-submit redirect and the
+"always present" message container — were produced by **suite B, not by the
+scenario method**. They surfaced because two independent readers of the same
+specification implemented it differently. Writing a second independent suite
+is itself a way to reach class B.
+
+The re-scoped question therefore has to be sharper than "can scenarios reach
+class B at all". It is whether the scenario route reaches it more
+systematically, or at lower cost, than writing a second independent suite.
+That comparison is part of what EQ4 now reports, and it may well come out
+against the scenario method.
+
+### Why this is not a post-hoc rescue
+
+- **Pre-registration binds decision rules, not premises.** What D-005 froze
+  were thresholds and the rules for reading results. A premise the data
+  contradicts is not something a threshold protects.
+- **No experimental data exists yet.** No scenario has run against V1, V2 or
+  V3. The only EQ4-relevant data in hand comes from V0 and the two suites, and
+  that data is what forced the change. There is no outcome to fit this to.
+- **The alternative is worse.** Reporting a coverage delta against a premise
+  my own baseline contradicts would misrepresent the study.
+- **Silence is what makes a mid-study change illegitimate.** This one is
+  dated here, carried in the Week 4 and Week 5 records, and stated on the
+  slide.
+
+**Affects:** T16, T26, T30–T33; EQ4 only. EQ1, EQ2, EQ3 and EQ5 are unchanged,
+as are the D-005 thresholds and the D-009 evidence format.
+**Cannot change after:** the first judge run of the main experiment (T25).
+
+## D-014 — <next decision>
 **Date:**
 **Decision:**
 **Reason:**
