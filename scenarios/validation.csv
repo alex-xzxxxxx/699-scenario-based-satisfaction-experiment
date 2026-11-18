@@ -27,7 +27,7 @@ SES-12,UC2,normal,low,R29,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Same 
 SES-13,UC2,integration,high,R28,yes,yes,yes,yes,yes,accepted,,
 TSK-01,UC3,normal,high,R8,yes,yes,yes,yes,yes,accepted,,
 TSK-02,UC3,normal,medium,R8,yes,yes,yes,yes,yes,accepted,,
-TSK-03,UC3,failure,high,R9,yes,yes,yes,yes,yes,accepted,,
+TSK-03,UC3,failure,high,"R9, R23",yes,yes,yes,yes,yes,accepted,,
 TSK-04,UC3,failure,medium,R9,yes,yes,yes,yes,yes,accepted,,
 TSK-05,UC3,edge,medium,R8,yes,yes,yes,yes,yes,accepted,,
 TSK-06,UC3,failure,medium,"R8, R22",yes,yes,yes,yes,yes,accepted,,
@@ -59,12 +59,12 @@ LST-11,UC4,edge,low,R15,yes,yes,yes,yes,yes,accepted,,
 LST-12,UC4,integration,medium,R15,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Search and filter combined; both mechanisms are covered by LST-04 and LST-09.
 LST-13,UC4,failure,low,R16,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Same empty state as LST-14. R16 names both causes; one run shows the behaviour.
 LST-14,UC4,edge,low,R16,yes,yes,yes,yes,yes,accepted,,
-ACC-01,UC5,adversarial,critical,R17,yes,yes,yes,yes,yes,accepted,,
+ACC-01,UC5,adversarial,critical,"R17, R21",yes,yes,yes,yes,yes,accepted,,
 ACC-02,UC5,adversarial,critical,"R18, R21",yes,yes,yes,yes,yes,accepted,,
 ACC-03,UC5,adversarial,critical,"R19, R21",yes,yes,yes,yes,yes,accepted,,
 ACC-04,UC5,adversarial,critical,"R24, R21",yes,yes,yes,yes,yes,accepted,,
 ACC-05,UC5,adversarial,critical,"R18, R21",yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,R18 is covered by ACC-02; the edit page adds no distinct authorisation path.
-ACC-06,UC5,adversarial,critical,R25,yes,yes,yes,yes,yes,accepted,,
+ACC-06,UC5,adversarial,critical,"R25, R21",yes,yes,yes,yes,yes,accepted,,
 ACC-07,UC5,adversarial,critical,R25,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,"Same R25 comparison as ACC-06, over POST rather than GET. Flagged as an overlap when drafted."
 ACC-08,UC5,adversarial,high,R20,yes,yes,yes,yes,yes,accepted,,
 ACC-09,UC5,adversarial,high,"R21, R25",yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Enumerating ids is what ACC-06 already demonstrates under R25.
