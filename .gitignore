@@ -16,3 +16,6 @@ app/node_modules/
 Thumbs.db
 # NOTE: evidence/, data/ and records/ are deliberately NOT ignored.
 # They are the retained evidence the execution plan requires (C10).
+
+evidence/*/
+data/run_manifest.jsonl
