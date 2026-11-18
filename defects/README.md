@@ -87,11 +87,33 @@ is the largest single lever in the library and it is easy to pull by accident.
 
 ### The comparison EQ1 actually makes
 
-EQ1 asks whether severity weighting changes conclusions **versus binary
-scoring**. The primary contrast is binary against the weighted schemes, not
-linear against geometric. Binary counts failures; the weighted schemes care
-what failed. They part company when one version fails fewer but more severe
-scenarios than another:
+Proposal §3.7, closing sentence: **EQ1 asks which of the views — binary,
+linear, geometric, critical gate — best separates the seeded-defect versions
+from V0, and which best matches the known severity of their defects.**
+
+That is not "does weighting change the answer". It is a comparison of four
+views against a reference, and **the reference is the seeded defects
+themselves**. Two things follow, and both are constraints on this file rather
+than on the analysis:
+
+1. **The views must disagree somewhere.** If all four order the versions
+   identically, "which separates best" has no discriminating case and EQ1
+   returns nothing. The disagreement has to be built in.
+2. **The defect severities must vary across versions.** "Matches the known
+   severity of their defects" is only testable if the versions differ in that
+   known severity. This is why §6 records a defect's own Table 8 severity:
+   it is EQ1's ground truth, not bookkeeping.
+
+Note which views split in the proposal's own illustration. One version fails
+a single critical scenario, another fails five low ones; binary *and* linear
+both rank the first higher, and only geometric reverses. So the useful
+requirement is that the views disagree — not specifically that binary
+inverts against the weighted pair.
+
+Binary counts failures; the weighted schemes care what failed. They part
+company when one version fails fewer but more severe scenarios than another
+(the table below assumes every scenario returned S or N; any Uncertain
+verdict changes the denominators, per `analysis/scoring.md` §3):
 
 | | Scenarios failed | Binary | Linear | Geometric |
 |---|---|---|---|---|
@@ -112,11 +134,12 @@ above medium:
 | Version A | 2 critical | 8 | 16 |
 | Version B | 3 high | 9 | 12 |
 
-**Requirement: the three profiles are fixed before any defect is chosen, and
-binary must invert against the weighted schemes for at least one pair of
-versions.** A linear-geometric inversion as well is desirable, not required —
-with three versions there are only three pairs, and forcing both may not be
-reachable without contorting the defect sets.
+**Requirement: the three profiles are fixed before any defect is chosen; the
+four views must not all order the versions identically; and the versions must
+differ in the known severity of their seeded defects.** Which views split is
+not prescribed — binary against the weighted pair, or geometric against the
+other three as in the proposal's illustration, both give EQ1 its
+discriminating case.
 
 Because the profiles are expressed as target sets of failing scenarios, and
 `predicted_scenarios` in §6 records the same thing per defect, the two must
@@ -162,7 +185,7 @@ built:
 | `defect_id` | at design | D1-01, D2-01, … by version |
 | `version` | at design | V1, V2 or V3 |
 | `requirement` | at design | the R-number violated |
-| `severity` | at design | the **defect's** own Table 8 severity, with the sentence justifying it. Distinct from the severities of the scenarios it breaks, which are what §4 scores. They usually agree; where they do not, say so in the row — a low-severity defect that breaks a critical scenario is worth noticing, not smoothing over |
+| `severity` | at design | the **defect's** own Table 8 severity, with the sentence justifying it. This is EQ1's ground truth — the "known severity" the four views are judged against — so it is load-bearing, not a label. Distinct from the severities of the scenarios it breaks, which are what §4 scores. They usually agree; where they do not, say so in the row, because a low-severity defect that breaks a critical scenario is exactly the case that separates the views |
 | `location` | at design | file and function |
 | `change` | at design | one sentence: what the code now does instead |
 | `predicted_scenarios` | at design, **before any run** | which frozen scenarios should expose it |

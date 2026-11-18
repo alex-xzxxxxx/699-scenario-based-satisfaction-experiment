@@ -26,7 +26,7 @@ downstream of it.
 | D-012 | 2026-11-16 | 4 | Requirements v1.1 closes 16 ambiguities before V0 | T05–T07, T10, T11, T16; EQ2, EQ4, EQ5 | V0 tagged (M2) ✓ |
 | D-013 | 2026-11-17 | 4 | EQ4 re-scoped to what each method can find, not how much | T16, T26, T30–T33; EQ4 | First judge run (T25) |
 | D-014 | 2026-11-17 | 5 | Evidence records an allowlist of response headers; `network.jsonl` scrubbed | T14, T15, T24, T25; SES-13 | First judge run (T25) |
-| D-015 | 2026-11-17 | 5 | Scores are per judgment source; no blended score | T16, T20, T25–T28; EQ1–EQ4 | First judge run (T25) |
+| D-015 | 2026-11-17 | 5 | Scoring restated from proposal §3.7: ternary verdicts, per-source scores | T16, T20, T25–T28; EQ1–EQ4 | First judge run (T25) |
 
 ---
 
@@ -457,12 +457,15 @@ with D-013.
 
 ## D-015 — Scores are per judgment source; no blended score exists
 **Date:** 2026-11-17
-**Decision:** A version does not have a satisfaction score. It has four
-numbers *per judgment source* — human reference, LLM judge, suite A, suite B
-— computed over the scenarios that source judged not satisfied, weighted by
-each **scenario's** frozen severity. Satisfaction is reported as a percentage
-of the library total (binary 47, linear 120, geometric 167). The full
-definition, with the exclusion and comparison rules, is `analysis/scoring.md`.
+**Decision:** Scoring follows **proposal §3.7**, restated for
+implementation in `analysis/scoring.md`. Verdicts are ternary — Satisfied,
+Not satisfied, Uncertain — with U excluded from the score and reported as an
+uncertainty rate. `S_bin` and `S_w` are computed over the scenarios judged S
+or N, so **the denominator is not the library total**; it moves with every U
+and every excluded run. Weights are each scenario's frozen severity. On top
+of §3.7, this entry fixes that a version has one set of these numbers *per
+judgment source* — human, LLM judge, suite A, suite B — and never a blended
+one.
 
 **Reason:** T16 asked how a scenario the judge and the human disagree about
 enters a version's total. The answer is that it does not: it enters two
@@ -484,6 +487,16 @@ Three rules follow, and each prevents a specific error:
   judges about 25 runs and the judge judges 188. Both come out as percentages
   on the same scale, which makes comparing them directly an easy and
   invisible mistake.
+
+**Corrected the same day.** The first version of this entry and of
+`analysis/scoring.md` were derived from D-005 and the EQ definitions without
+reading proposal §3.7, and were wrong in two ways: verdicts were treated as
+binary, losing the Uncertain category §3.8 requires of the judge; and
+satisfaction was normalised against a constant library total rather than
+against the scenarios actually judged. The proposal's worked example
+reproduces to three decimals under the corrected formulas, which is what
+confirms the reading. Deriving a definition that already existed was the
+error — the proposal is the authority and should have been read first.
 
 **Settled here because T16 needed it.** The severity profiles for V1-V3 have
 to produce a binary-versus-weighted inversion, and that constraint cannot be
