@@ -1,0 +1,75 @@
+scenario_id,use_case,category,severity,requirements,b4_1_observable,b4_2_reader_agreement,b4_3_non_duplicate,b4_4_traceable,b4_5_reliable,decision,failed_item,reason
+REG-01,UC1,normal,high,R1,yes,yes,yes,yes,yes,accepted,,
+REG-02,UC1,failure,medium,R2,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,"Subsumed by REG-03, which exercises the case-insensitive rule R2 actually states."
+REG-03,UC1,failure,medium,R2,yes,yes,yes,yes,yes,accepted,,
+REG-04,UC1,edge,low,R1,yes,yes,yes,yes,yes,accepted,,
+REG-05,UC1,edge,medium,R1,yes,yes,yes,yes,yes,accepted,,
+REG-06,UC1,edge,medium,R1,yes,yes,yes,yes,yes,rejected,none - distribution,Distribution. The length boundary is exercised by REG-05.
+REG-07,UC1,failure,medium,R3,yes,yes,yes,yes,yes,accepted,,
+REG-08,UC1,failure,medium,R3,yes,yes,yes,yes,yes,rejected,none - distribution,Distribution. R3 stays covered by REG-07 and REG-09.
+REG-09,UC1,failure,medium,R3,yes,yes,yes,yes,yes,accepted,,
+REG-10,UC1,edge,medium,R1,yes,yes,yes,yes,yes,accepted,,
+REG-11,UC1,failure,medium,R3,yes,yes,yes,yes,yes,rejected,none - distribution,Distribution. R3 stays covered by REG-07 and REG-09.
+REG-12,UC1,edge,low,R1,yes,yes,yes,yes,yes,accepted,,
+REG-13,UC1,adversarial,high,"R22, R23",yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Server-side enforcement of R22 and R23 is covered by TSK-20.
+SES-01,UC2,normal,high,R4,yes,yes,yes,yes,yes,accepted,,
+SES-02,UC2,edge,medium,R4,yes,yes,yes,yes,yes,accepted,,
+SES-03,UC2,failure,high,R5,yes,yes,yes,yes,yes,accepted,,
+SES-04,UC2,failure,high,R5,yes,yes,yes,yes,yes,accepted,,
+SES-05,UC2,adversarial,critical,R5,yes,yes,yes,yes,yes,accepted,,
+SES-06,UC2,edge,low,R4,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,The password-not-trimmed asymmetry is already the point of REG-12.
+SES-07,UC2,normal,high,R6,yes,yes,yes,yes,yes,accepted,,
+SES-08,UC2,adversarial,critical,R7,yes,yes,yes,yes,yes,accepted,,
+SES-09,UC2,adversarial,high,R7,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,R7 is covered by SES-08.
+SES-10,UC2,edge,medium,R7,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,R7 for unknown paths is covered by SES-08.
+SES-11,UC2,normal,low,R29,yes,yes,yes,yes,yes,accepted,,
+SES-12,UC2,normal,low,R29,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Same requirement and same mechanism as SES-11; /register adds nothing over /signin.
+SES-13,UC2,integration,high,R28,yes,yes,yes,yes,yes,accepted,,
+TSK-01,UC3,normal,high,R8,yes,yes,yes,yes,yes,accepted,,
+TSK-02,UC3,normal,medium,R8,yes,yes,yes,yes,yes,accepted,,
+TSK-03,UC3,failure,high,R9,yes,yes,yes,yes,yes,accepted,,
+TSK-04,UC3,failure,medium,R9,yes,yes,yes,yes,yes,accepted,,
+TSK-05,UC3,edge,medium,R8,yes,yes,yes,yes,yes,accepted,,
+TSK-06,UC3,failure,medium,"R8, R22",yes,yes,yes,yes,yes,accepted,,
+TSK-07,UC3,edge,low,R8,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,"Same trim rule as REG-04, on a different field."
+TSK-08,UC3,edge,medium,R8,yes,yes,yes,yes,yes,accepted,,
+TSK-09,UC3,failure,low,"R8, R22",yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,"Same over-length rejection mechanism as TSK-06, on a different field."
+TSK-10,UC3,failure,medium,R26,yes,yes,yes,yes,yes,accepted,,
+TSK-11,UC3,failure,medium,R26,yes,yes,yes,yes,yes,accepted,,
+TSK-12,UC3,edge,low,R26,yes,yes,yes,yes,yes,rejected,none - distribution,Distribution. R26 stays covered by TSK-10 and TSK-11.
+TSK-13,UC3,normal,high,R10,yes,yes,yes,yes,yes,accepted,,
+TSK-14,UC3,failure,medium,"R10, R23",yes,yes,yes,yes,yes,accepted,,
+TSK-15,UC3,normal,high,R11,yes,yes,yes,yes,yes,accepted,,
+TSK-16,UC3,normal,medium,R11,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,The reopen half of TSK-15. R11 is one mechanism and one run shows both directions.
+TSK-17,UC3,normal,high,R12,yes,yes,yes,yes,yes,accepted,,
+TSK-18,UC3,edge,low,R12,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,The shown-once half of TSK-17. One run covers both.
+TSK-19,UC3,adversarial,high,"R22, R23",yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Server-side enforcement of R22 and R23 is covered by TSK-20.
+TSK-20,UC3,adversarial,high,"R22, R23",yes,yes,yes,yes,yes,accepted,,
+LST-01,UC4,normal,high,R13,yes,yes,yes,yes,yes,accepted,,
+LST-02,UC4,normal,medium,"R13, R30",yes,yes,yes,yes,yes,accepted,,
+LST-03,UC4,normal,low,R13,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Same user action as LST-01. Which fields a row shows is observable inside LST-01's evidence.
+LST-04,UC4,normal,medium,R14,yes,yes,yes,yes,yes,accepted,,
+LST-05,UC4,normal,medium,R14,yes,yes,yes,yes,yes,accepted,,
+LST-06,UC4,edge,medium,R14,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Case-insensitivity is part of what LST-04 exercises under R14.
+LST-07,UC4,adversarial,medium,R14,yes,yes,yes,yes,yes,rejected,none - distribution,Distribution. Literal-text handling under R14 remains in LST-04 and LST-05.
+LST-08,UC4,edge,low,R14,yes,yes,yes,yes,yes,rejected,none - distribution,Distribution. R14 stays covered by LST-04 and LST-05.
+LST-09,UC4,normal,medium,R15,yes,yes,yes,yes,yes,accepted,,
+LST-10,UC4,normal,medium,R15,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Symmetric with LST-09. R15 is one filter; the second value adds no distinct behaviour.
+LST-11,UC4,edge,low,R15,yes,yes,yes,yes,yes,accepted,,
+LST-12,UC4,integration,medium,R15,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Search and filter combined; both mechanisms are covered by LST-04 and LST-09.
+LST-13,UC4,failure,low,R16,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Same empty state as LST-14. R16 names both causes; one run shows the behaviour.
+LST-14,UC4,edge,low,R16,yes,yes,yes,yes,yes,accepted,,
+ACC-01,UC5,adversarial,critical,R17,yes,yes,yes,yes,yes,accepted,,
+ACC-02,UC5,adversarial,critical,"R18, R21",yes,yes,yes,yes,yes,accepted,,
+ACC-03,UC5,adversarial,critical,"R19, R21",yes,yes,yes,yes,yes,accepted,,
+ACC-04,UC5,adversarial,critical,"R24, R21",yes,yes,yes,yes,yes,accepted,,
+ACC-05,UC5,adversarial,critical,"R18, R21",yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,R18 is covered by ACC-02; the edit page adds no distinct authorisation path.
+ACC-06,UC5,adversarial,critical,R25,yes,yes,yes,yes,yes,accepted,,
+ACC-07,UC5,adversarial,critical,R25,yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,"Same R25 comparison as ACC-06, over POST rather than GET. Flagged as an overlap when drafted."
+ACC-08,UC5,adversarial,high,R20,yes,yes,yes,yes,yes,accepted,,
+ACC-09,UC5,adversarial,high,"R21, R25",yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Enumerating ids is what ACC-06 already demonstrates under R25.
+ACC-10,UC5,integration,critical,"R13, R20",yes,yes,yes,yes,yes,accepted,,
+INT-01,cross,integration,high,"R1, R8, R13",yes,yes,yes,yes,yes,accepted,,
+INT-02,cross,integration,medium,R8–R12,yes,yes,yes,yes,yes,accepted,,
+INT-03,cross,integration,medium,"R8, R14, R15",yes,yes,no,yes,yes,rejected,B4#3 not a duplicate,Create then find is covered by INT-02 together with LST-04.
+INT-04,cross,integration,high,§5,no,yes,yes,yes,yes,rejected,B4#1 observable in the evidence,"Exercises the harness's own reset rather than the application. Every scenario already resets, so this is not observable as application behaviour."

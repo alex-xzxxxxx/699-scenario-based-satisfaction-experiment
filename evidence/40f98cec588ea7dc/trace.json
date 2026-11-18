@@ -1,0 +1,56 @@
+{
+  "run_id": "40f98cec588ea7dc",
+  "scenario": {
+    "id": "ACC-01",
+    "category": "adversarial",
+    "severity": "critical",
+    "preconditions": "Seed state. Task 5 belongs to bob; it is titled \"Reply to supplier\" and described \"Confirm the delivery window\". Alice does not own it.",
+    "user_action": "Signed in as alice, request bob's task by its URL.",
+    "expected_behaviour": "The response is a 404 page, and no part of bob's task appears anywhere in it \u2014 not the title, not the description. A 404 status that still shows the title fails this scenario.",
+    "expected_evidence": "The HTTP status, and the full visible page text, so it can be compared against bob's title and description.",
+    "requirements": "R17, R21"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "action": "reset",
+      "detail": "seed data restored",
+      "url": "about:blank",
+      "screenshot": "01-reset.png"
+    },
+    {
+      "step": 2,
+      "action": "sign_in",
+      "detail": "signed in as 'alice'",
+      "url": "/tasks",
+      "visible_text": "TaskTracker \u00b7 Signed in as alice \u00b7 Tasks \u00b7 New task \u00b7 Sign out \u00b7 Your tasks \u00b7 New task \u00b7 Search \u00b7 Status \u00b7 All \u00b7 Open \u00b7 Completed \u00b7 Search \u00b7 Buy printer paper \u00b7 open \u00b7 Due 2026-11-20 \u00b7 Renew library card \u00b7 completed \u00b7 Book flights \u00b7 open \u00b7 Due 2026-12-05 \u00b7 Draft project outline \u00b7 open \u00b7 Due 2026-12-01",
+      "screenshot": "02-sign-in.png"
+    },
+    {
+      "step": 3,
+      "action": "request",
+      "detail": "requested /tasks/5 directly",
+      "url": "/tasks",
+      "http_status": 404,
+      "screenshot": "03-request.png"
+    },
+    {
+      "step": 4,
+      "action": "goto",
+      "detail": "requested /tasks/5",
+      "url": "/tasks/5",
+      "http_status": 404,
+      "visible_text": "The page you requested was not found. \u00b7 Not found \u00b7 The page you requested was not found. \u00b7 Back to your tasks",
+      "screenshot": "04-goto.png"
+    },
+    {
+      "step": 5,
+      "action": "capture",
+      "detail": "alice requesting bob's task: url http://localhost:3000/tasks/5; no task rows; message: 'The page you requested was not found.'",
+      "url": "/tasks/5",
+      "screenshot": "05-capture.png"
+    }
+  ],
+  "final_state": "final: url http://localhost:3000/tasks/5; no task rows; message: 'The page you requested was not found.'",
+  "runner_error": ""
+}

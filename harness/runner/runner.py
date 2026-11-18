@@ -22,9 +22,6 @@ import traceback
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from playwright.sync_api import Error as PlaywrightError
-from playwright.sync_api import sync_playwright
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from harness.evidence import Bundle, Step, new_run_id  # noqa: E402
@@ -32,6 +29,21 @@ from harness.runner import scenario as scn  # noqa: E402
 from harness.runner import steps as step_helpers  # noqa: E402
 
 DEFAULT_URL = "http://localhost:3000"
+
+
+def _playwright():
+    """Imported on demand, so --check validates the library on a machine with
+    only pyyaml installed."""
+    try:
+        from playwright.sync_api import Error, sync_playwright
+    except ModuleNotFoundError:
+        raise SystemExit(
+            "Playwright is not installed. Running scenarios needs it:\n"
+            "    pip install -r requirements.txt\n"
+            "    playwright install chromium\n"
+            "Validating the library (--check) needs only pyyaml."
+        ) from None
+    return Error, sync_playwright
 
 
 @dataclass
@@ -59,7 +71,7 @@ def _visible_change(before: str, after: str) -> str:
 def _body_text(page) -> str:
     try:
         return page.locator("body").inner_text()
-    except PlaywrightError:
+    except Exception:  # noqa: BLE001 - playwright's Error, imported on demand
         return ""
 
 
@@ -100,7 +112,7 @@ def run_one(sc: scn.Scenario, page, base_url: str, version: str,
                 path = bundle.screenshot_path(n, name)
                 page.screenshot(path=str(path))
                 rec.screenshot = path.name
-            except PlaywrightError:
+            except Exception:  # noqa: BLE001
                 pass
         bundle.add(rec)
 
@@ -144,6 +156,7 @@ def main() -> int:
               f"Known: {', '.join(s.id for s in library)}")
         return 2
 
+    _, sync_playwright = _playwright()
     written = []
     with sync_playwright() as p:
         browser = p.chromium.launch()

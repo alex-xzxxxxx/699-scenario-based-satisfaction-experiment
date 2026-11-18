@@ -1,0 +1,63 @@
+{
+  "run_id": "3ca88b77660b1509",
+  "scenario": {
+    "id": "ACC-06",
+    "category": "adversarial",
+    "severity": "critical",
+    "preconditions": "Seed state. Task 5 belongs to bob. No task has id 999999.",
+    "user_action": "Signed in as alice, request bob's task id and a non-existent id by the same routes, and compare the two responses.",
+    "expected_behaviour": "The two responses are indistinguishable \u2014 same status, same page, same message. If they differ in any way, alice can discover which task ids exist by trying them.",
+    "expected_evidence": "Both status codes and both bodies for each pair of requests, and whether each pair matched.",
+    "requirements": "R25, R21"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "action": "reset",
+      "detail": "seed data restored",
+      "url": "about:blank",
+      "screenshot": "01-reset.png"
+    },
+    {
+      "step": 2,
+      "action": "sign_in",
+      "detail": "signed in as 'alice'",
+      "url": "/tasks",
+      "visible_text": "TaskTracker \u00b7 Signed in as alice \u00b7 Tasks \u00b7 New task \u00b7 Sign out \u00b7 Your tasks \u00b7 New task \u00b7 Search \u00b7 Status \u00b7 All \u00b7 Open \u00b7 Completed \u00b7 Search \u00b7 Buy printer paper \u00b7 open \u00b7 Due 2026-11-20 \u00b7 Renew library card \u00b7 completed \u00b7 Book flights \u00b7 open \u00b7 Due 2026-12-05 \u00b7 Draft project outline \u00b7 open \u00b7 Due 2026-12-01",
+      "screenshot": "02-sign-in.png"
+    },
+    {
+      "step": 3,
+      "action": "compare_responses",
+      "detail": "compared GET /tasks/5 against /tasks/999999 \u2014 status 404 vs 404 (same), body identical",
+      "url": "/tasks",
+      "http_status": 404,
+      "screenshot": "03-compare-responses.png"
+    },
+    {
+      "step": 4,
+      "action": "compare_responses",
+      "detail": "compared GET /tasks/5/edit against /tasks/999999/edit \u2014 status 404 vs 404 (same), body identical",
+      "url": "/tasks",
+      "http_status": 404,
+      "screenshot": "04-compare-responses.png"
+    },
+    {
+      "step": 5,
+      "action": "compare_responses",
+      "detail": "compared POST /tasks/5/toggle against /tasks/999999/toggle \u2014 status 404 vs 404 (same), body identical",
+      "url": "/tasks",
+      "http_status": 404,
+      "screenshot": "05-compare-responses.png"
+    },
+    {
+      "step": 6,
+      "action": "capture",
+      "detail": "after the comparisons: url http://localhost:3000/tasks; 4 task row(s): Buy printer paper \u00b7 open \u00b7 Due 2026-11-20 | Renew library card \u00b7 completed | Book flights \u00b7 open \u00b7 Due 2026-12-05 | Draft project outline \u00b7 open \u00b7 Due 2026-12-01",
+      "url": "/tasks",
+      "screenshot": "06-capture.png"
+    }
+  ],
+  "final_state": "final: url http://localhost:3000/tasks; 4 task row(s): Buy printer paper \u00b7 open \u00b7 Due 2026-11-20 | Renew library card \u00b7 completed | Book flights \u00b7 open \u00b7 Due 2026-12-05 | Draft project outline \u00b7 open \u00b7 Due 2026-12-01",
+  "runner_error": ""
+}

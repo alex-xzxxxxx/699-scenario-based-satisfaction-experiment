@@ -1,0 +1,3 @@
+{"run_id": "40f98cec588ea7dc", "scenario_id": "ACC-01", "version": "V0", "category": "adversarial", "severity": "critical", "started": 1794960521.172854, "completed": 1794960523.4231138, "steps": 5, "runner_error": false}
+{"run_id": "3ca88b77660b1509", "scenario_id": "ACC-06", "version": "V0", "category": "adversarial", "severity": "critical", "started": 1794960523.5179558, "completed": 1794960525.935477, "steps": 6, "runner_error": false}
+{"run_id": "f8b935f47365c0fd", "scenario_id": "TSK-03", "version": "V0", "category": "failure", "severity": "high", "started": 1794960526.043243, "completed": 1794960528.4526105, "steps": 11, "runner_error": false}
