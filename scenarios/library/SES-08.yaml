@@ -1,0 +1,23 @@
+id: SES-08
+use_case: UC2
+category: adversarial
+severity: critical
+preconditions: >
+  Seed state, signed out. No session exists. Tasks 1-8 belong to alice, bob
+  and carol.
+user_action: Request the task list without signing in.
+expected_behaviour: >
+  The request goes to the sign-in page and no task content is returned. Not
+  one task title from any of the three accounts appears anywhere in the
+  response. A page that redirects but still carries the list in its markup
+  fails this scenario.
+expected_evidence: >
+  The URL reached, and the full visible page text, so it can be checked
+  against all eight seed task titles.
+requirements: R7
+steps:
+  - do: reset
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: requesting the task list with no session

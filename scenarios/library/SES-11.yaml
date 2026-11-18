@@ -1,0 +1,22 @@
+id: SES-11
+use_case: UC2
+category: normal
+severity: low
+preconditions: >
+  Seed state. Alice is signed in.
+user_action: Request the sign-in page while already signed in.
+expected_behaviour: >
+  The sign-in form is not shown to someone who already has a session; the
+  request goes to the task list instead.
+expected_evidence: >
+  The URL after the request, and whether a sign-in form or a task list is on
+  the page.
+requirements: R29
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /signin
+  - do: capture
+    label: requesting /signin while signed in

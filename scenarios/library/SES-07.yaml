@@ -1,0 +1,26 @@
+id: SES-07
+use_case: UC2
+category: normal
+severity: high
+preconditions: >
+  Seed state. Alice is signed in and her task list is open.
+user_action: Sign out, then request the task list again.
+expected_behaviour: >
+  Signing out ends the session. The later request for /tasks does not return
+  the list; it goes to the sign-in page instead. A list still shown after
+  signing out fails this scenario.
+expected_evidence: >
+  The URL after signing out, the URL after requesting /tasks, and whether any
+  task title appears on either page.
+requirements: R6
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: signed in, before signing out
+  - do: sign_out
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: requesting the task list after signing out

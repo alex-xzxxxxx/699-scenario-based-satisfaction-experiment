@@ -1,0 +1,29 @@
+id: LST-05
+use_case: UC4
+category: normal
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in. Task 2 is titled "Book flights" and
+  described "Compare two airlines before booking". The word "airlines" appears
+  in that description and in no task title.
+user_action: Search for "airlines".
+expected_behaviour: >
+  "Book flights" is listed, matched on its description rather than its title.
+  A search that only looks at titles would return nothing here and fails this
+  scenario.
+expected_evidence: >
+  The task rows returned by the search, and the search term.
+requirements: R14
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks
+  - do: fill
+    field: search
+    value: airlines
+  - do: click
+    target: search_submit
+  - do: capture
+    label: the results for "airlines", a description-only match

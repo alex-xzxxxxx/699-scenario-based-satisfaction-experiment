@@ -1,0 +1,37 @@
+id: TSK-11
+use_case: UC3
+category: failure
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in. Due dates are stored as YYYY-MM-DD.
+user_action: Create a task with the due date "11/16/2026".
+expected_behaviour: >
+  Rejected, because the format is wrong. Nothing is stored and the row count
+  is unchanged. Silently reinterpreting the value as 16 November 2026 also
+  fails this scenario: guessing the user's intent is not accepting the format.
+expected_evidence: >
+  The message text, the task row count before and after, and any date shown on
+  a row that did appear.
+requirements: R26
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: the list before the attempt
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: Task with a US-format date
+  - do: fill
+    field: due
+    value: 11/16/2026
+  - do: click
+    target: create
+  - do: capture
+    label: the response to a wrongly formatted date
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list after the attempt

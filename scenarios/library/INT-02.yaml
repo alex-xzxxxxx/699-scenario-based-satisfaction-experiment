@@ -1,0 +1,63 @@
+id: INT-02
+use_case: cross
+category: integration
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in and owns four tasks.
+user_action: Create a task, edit it, complete it, reopen it, then delete it.
+expected_behaviour: >
+  Each step takes effect and is visible before the next one runs, and the last
+  removes the task, leaving alice's original four. A step that appears to
+  work but does not persist shows up here as the wrong state at the following
+  capture.
+expected_evidence: >
+  The state after each of the five steps, so the sequence can be followed.
+requirements: R8, R9, R10, R11, R12
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: alice's four tasks before the sequence
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: Lifecycle task
+  - do: click
+    target: create
+  - do: capture
+    label: after creating
+  - do: goto
+    path: /tasks
+  - do: open_task
+    title: Lifecycle task
+  - do: capture
+    label: the new task's own page
+  - do: goto
+    path: /tasks
+  - do: fill
+    field: search
+    value: Lifecycle task
+  - do: click
+    target: search_submit
+  - do: capture
+    label: the task found by search, before editing
+  - do: open_task
+    title: Lifecycle task
+  - do: click
+    target: toggle
+  - do: capture
+    label: after completing
+  - do: click
+    target: toggle
+  - do: capture
+    label: after reopening
+  - do: click
+    target: delete
+  - do: capture
+    label: after deleting
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: alice's list at the end, back to four

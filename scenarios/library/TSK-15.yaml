@@ -1,0 +1,30 @@
+id: TSK-15
+use_case: UC3
+category: normal
+severity: high
+preconditions: >
+  Seed state. Alice is signed in. Task 1 is hers and its status is "open".
+user_action: Open that task and mark it completed.
+expected_behaviour: >
+  The status changes from "open" to "completed" and stays changed when the
+  task is looked at again. No other task's status changes.
+expected_evidence: >
+  The status shown on the task's page before and after, and the task rows
+  afterwards.
+requirements: R11
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks/1
+  - do: capture
+    label: task 1 before the toggle
+  - do: click
+    target: toggle
+  - do: capture
+    label: task 1 immediately after the toggle
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list after the toggle

@@ -1,0 +1,30 @@
+id: LST-04
+use_case: UC4
+category: normal
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in. Of her four tasks, only "Book flights"
+  contains the word "flights".
+user_action: Search for "flights".
+expected_behaviour: >
+  Only "Book flights" is listed. Her other three tasks are not. The search
+  term appearing in the search box is not a match and does not count as a
+  result.
+expected_evidence: >
+  The task rows returned by the search, and the search term.
+requirements: R14
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the full list before searching
+  - do: fill
+    field: search
+    value: flights
+  - do: click
+    target: search_submit
+  - do: capture
+    label: the results for "flights"

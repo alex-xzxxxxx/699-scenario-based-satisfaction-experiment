@@ -1,0 +1,31 @@
+id: SES-13
+use_case: UC2
+category: integration
+severity: high
+preconditions: >
+  Seed state. Alice is signed in and her task list is open in the browser.
+user_action: Sign out, then press the browser Back button to return to the list.
+expected_behaviour: >
+  The protected page is not shown again. Ending a session has to survive the
+  Back button, which means the protected response must not have been stored
+  by the browser in the first place; the response carries Cache-Control
+  no-store for that reason. A list redrawn from cache after signing out
+  exposes the data on a shared machine.
+expected_evidence: >
+  The URL after pressing Back, whether any task title is visible, and the
+  Cache-Control header on the protected response.
+requirements: R28
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the task list while signed in
+  - do: sign_out
+  - do: capture
+    label: immediately after signing out
+  - do: back
+  - do: capture
+    label: after pressing the browser Back button

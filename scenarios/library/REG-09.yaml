@@ -1,0 +1,33 @@
+id: REG-09
+use_case: UC1
+category: failure
+severity: medium
+preconditions: >
+  Seed state, signed out. The username rule allows letters, digits and
+  underscores only.
+user_action: Register the username "bad-name", which contains a hyphen.
+expected_behaviour: >
+  Rejected, because a hyphen is not an allowed character. The message names
+  the username as the problem, and no account is created.
+expected_evidence: >
+  The message text, and whether the account can sign in afterwards.
+requirements: R3
+steps:
+  - do: reset
+  - do: register
+    username: bad-name
+    password: goodpass123
+  - do: capture
+    label: the response to a hyphenated username
+  - do: goto
+    path: /signin
+  - do: fill
+    field: username
+    value: bad-name
+  - do: fill
+    field: password
+    value: goodpass123
+  - do: click
+    target: submit
+  - do: capture
+    label: attempting to sign in as the rejected name

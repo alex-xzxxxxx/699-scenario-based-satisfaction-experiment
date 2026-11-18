@@ -1,0 +1,29 @@
+id: REG-01
+use_case: UC1
+category: normal
+severity: high
+preconditions: >
+  Seed state, signed out. No account named "dev_one" exists.
+user_action: Register "dev_one" with the password "goodpass123", then sign out and sign in again with it.
+expected_behaviour: >
+  Registration is accepted and the new account is signed in immediately; the
+  task list is shown and it is empty, because a new account owns no tasks.
+  Signing out and back in with the same credentials works, which is what shows
+  the account was persisted rather than only held for one request.
+expected_evidence: >
+  The URL after registering; whether a task list or an error is on the page;
+  the URL after signing in again.
+requirements: R1
+steps:
+  - do: reset
+  - do: register
+    username: dev_one
+    password: goodpass123
+  - do: capture
+    label: immediately after registering
+  - do: sign_out
+  - do: sign_in
+    username: dev_one
+    password: goodpass123
+  - do: capture
+    label: after signing in again with the new account

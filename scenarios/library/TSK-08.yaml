@@ -1,0 +1,37 @@
+id: TSK-08
+use_case: UC3
+category: edge
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in. The description limit is 500 characters.
+user_action: Create a task with a description of exactly 500 characters.
+expected_behaviour: >
+  Accepted, because 500 is the upper bound and the bound is inclusive. The
+  description is stored whole and shown in full on the task's own page, not
+  cut short.
+expected_evidence: >
+  The task's own page, carrying the description text, so its length can be
+  checked.
+requirements: R8
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: Task with a boundary-length description
+  - do: fill
+    field: description
+    value: 'Check the delivery window with the supplier, confirm the revised unit price, and note whether the discount still applies at the lower volume. Then update the sheet, circulate it to finance, and flag anything that moves the total by more than two percent so it can be reviewed before the order goes out. Padding to the five hundred character boundary. Padding to the five hundred character boundary. Padding to the five hundred character boundary. Padding to the five hundred character boundary. Paddi'
+  - do: click
+    target: create
+  - do: capture
+    label: the response to a 500-character description
+  - do: goto
+    path: /tasks
+  - do: open_task
+    title: Task with a boundary-length description
+  - do: capture
+    label: the task page, with the full description

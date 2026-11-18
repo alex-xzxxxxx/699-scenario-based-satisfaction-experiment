@@ -1,0 +1,39 @@
+id: INT-01
+use_case: cross
+category: integration
+severity: high
+preconditions: >
+  Seed state, signed out. No account named "returning" exists.
+user_action: Register an account, create a task, sign out, then sign back in.
+expected_behaviour: >
+  The task is still there after signing back in, and it belongs to that
+  account. This is the shortest path that shows registration, creation and the
+  session all persist to storage rather than living in one request.
+expected_evidence: >
+  The task rows immediately after creating, and the task rows after signing
+  back in.
+requirements: R1, R8, R13
+steps:
+  - do: reset
+  - do: register
+    username: returning
+    password: goodpass123
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: Survives a sign-out
+  - do: click
+    target: create
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the new account's list, with its one task
+  - do: sign_out
+  - do: sign_in
+    username: returning
+    password: goodpass123
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the same list after signing back in

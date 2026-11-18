@@ -1,0 +1,33 @@
+id: TSK-04
+use_case: UC3
+category: failure
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in and owns four tasks.
+user_action: Create a task whose title is three spaces and nothing else.
+expected_behaviour: >
+  Rejected. A title that is only whitespace is not a title; it is treated the
+  same as an empty one. A visible message says so and no task is created, so
+  the list still holds four rows.
+expected_evidence: >
+  The message text, and the task row count before and after.
+requirements: R9
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: the list before the attempt, four rows
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: '   '
+  - do: click
+    target: create
+  - do: capture
+    label: the response to a whitespace-only title
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list after the attempt

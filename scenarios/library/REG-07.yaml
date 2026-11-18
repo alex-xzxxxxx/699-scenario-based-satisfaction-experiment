@@ -1,0 +1,33 @@
+id: REG-07
+use_case: UC1
+category: failure
+severity: medium
+preconditions: >
+  Seed state, signed out. The username rule requires 3 to 20 characters.
+user_action: Register the 2-character username "ab" with a valid password.
+expected_behaviour: >
+  Rejected, because 2 is below the lower bound. The message names the username
+  as the problem rather than reporting a generic failure, and no account is
+  created.
+expected_evidence: >
+  The message text, and whether the account can sign in afterwards.
+requirements: R3
+steps:
+  - do: reset
+  - do: register
+    username: ab
+    password: goodpass123
+  - do: capture
+    label: the response to a 2-character username
+  - do: goto
+    path: /signin
+  - do: fill
+    field: username
+    value: ab
+  - do: fill
+    field: password
+    value: goodpass123
+  - do: click
+    target: submit
+  - do: capture
+    label: attempting to sign in as the rejected name

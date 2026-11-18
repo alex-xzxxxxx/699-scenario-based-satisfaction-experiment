@@ -1,0 +1,36 @@
+id: TSK-10
+use_case: UC3
+category: failure
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in. Due dates are stored as YYYY-MM-DD.
+user_action: Create a task with the due date "2026-02-30".
+expected_behaviour: >
+  Rejected. The string is well-formed but 30 February is not a real date, so
+  checking the shape alone is not enough. Nothing is stored and the row count
+  is unchanged.
+expected_evidence: >
+  The message text, and the task row count before and after.
+requirements: R26
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: the list before the attempt
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: Task with an impossible date
+  - do: fill
+    field: due
+    value: '2026-02-30'
+  - do: click
+    target: create
+  - do: capture
+    label: the response to 30 February
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list after the attempt

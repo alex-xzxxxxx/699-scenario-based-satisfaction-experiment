@@ -1,0 +1,23 @@
+id: LST-01
+use_case: UC4
+category: normal
+severity: high
+preconditions: >
+  Seed state. Alice owns tasks 1-4; bob owns 5-7 ("Reply to supplier", "Pay
+  invoice 2291", "Draft budget sheet"); carol owns task 8 ("Collect parcel").
+user_action: Signed in as alice, open the task list.
+expected_behaviour: >
+  Exactly alice's four tasks are listed. No title belonging to bob or carol
+  appears anywhere on the page.
+expected_evidence: >
+  Every task title visible on the page, so it can be checked against the three
+  owners' task sets.
+requirements: R13
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: alice's full task list

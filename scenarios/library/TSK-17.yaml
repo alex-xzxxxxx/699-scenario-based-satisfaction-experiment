@@ -1,0 +1,31 @@
+id: TSK-17
+use_case: UC3
+category: normal
+severity: high
+preconditions: >
+  Seed state. Alice is signed in and owns four tasks, one of which is task 4,
+  "Buy printer paper".
+user_action: Delete that task.
+expected_behaviour: >
+  The task leaves the list, which drops to three rows, and a visible message
+  confirms the deletion. A deletion that happens silently, with no message,
+  fails this scenario, as does a message with no deletion.
+expected_evidence: >
+  The task rows before and after, and the text of the message shown after.
+requirements: R12
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: the list before the deletion
+  - do: goto
+    path: /tasks/4
+  - do: click
+    target: delete
+  - do: capture
+    label: immediately after deleting, including any message
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list after the deletion

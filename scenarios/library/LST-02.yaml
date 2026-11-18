@@ -1,0 +1,36 @@
+id: LST-02
+use_case: UC4
+category: normal
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in.
+user_action: Create two tasks one after the other, then open the list.
+expected_behaviour: >
+  The task created second appears above the task created first, because the
+  list is ordered newest first. Both appear above the four seed tasks, which
+  are older than either.
+expected_evidence: >
+  The order of the task rows, top to bottom.
+requirements: R13, R30
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: First of the pair
+  - do: click
+    target: create
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: Second of the pair
+  - do: click
+    target: create
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list, showing the order of the two new tasks

@@ -1,0 +1,35 @@
+id: TSK-06
+use_case: UC3
+category: failure
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in. The title limit is 100 characters; TSK-05
+  shows that 100 is accepted.
+user_action: Create a task with a 101-character title.
+expected_behaviour: >
+  Rejected, because 101 is one over the limit. No task is created and the row
+  count is unchanged. A task created with the title silently cut to 100
+  characters also fails this scenario: truncating is not rejecting.
+expected_evidence: >
+  The message text, the task row count before and after, and the title of any
+  row that did appear.
+requirements: R8, R22
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: the list before the attempt
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: 'Prepare the quarterly supplier review pack and circulate it to finance before the Friday deadline...x'
+  - do: click
+    target: create
+  - do: capture
+    label: the response to a 101-character title
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list after the attempt

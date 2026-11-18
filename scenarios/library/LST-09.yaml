@@ -1,0 +1,29 @@
+id: LST-09
+use_case: UC4
+category: normal
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in. Of her four tasks, three are open (tasks 1,
+  2 and 4) and one is completed (task 3, "Renew library card").
+user_action: Filter the list by status "open".
+expected_behaviour: >
+  The three open tasks are listed and the completed one is not. Every row
+  shown carries the status "open".
+expected_evidence: >
+  The task rows after filtering, with the status of each.
+requirements: R15
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the unfiltered list, three open and one completed
+  - do: select
+    field: status_filter
+    value: open
+  - do: click
+    target: search_submit
+  - do: capture
+    label: the list filtered to open

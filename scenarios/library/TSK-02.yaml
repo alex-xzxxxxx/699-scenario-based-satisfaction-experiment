@@ -1,0 +1,42 @@
+id: TSK-02
+use_case: UC3
+category: normal
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in.
+user_action: Create a task with a title, a description and a due date, then open it.
+expected_behaviour: >
+  All three values are stored and shown back. The title appears in the list,
+  and the task's own page carries the description and the due date as entered.
+  A task that keeps the title but drops the description or the date fails this
+  scenario.
+expected_evidence: >
+  The row in the list, and the text of the task's own page.
+requirements: R8
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: Submit expense claim
+  - do: fill
+    field: description
+    value: Attach the hotel receipt and the two taxi receipts
+  - do: fill
+    field: due
+    value: '2026-12-18'
+  - do: click
+    target: create
+  - do: capture
+    label: immediately after submitting
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list, showing the new row
+  - do: open_task
+    title: Submit expense claim
+  - do: capture
+    label: the task's own page, with description and due date

@@ -1,0 +1,35 @@
+id: ACC-03
+use_case: UC5
+category: adversarial
+severity: critical
+preconditions: >
+  Seed state. Task 5 belongs to bob and is titled "Reply to supplier". Alice
+  does not own it.
+user_action: Signed in as alice, submit a delete for bob's task straight to the server.
+expected_behaviour: >
+  Refused, and the task still exists for bob afterwards. Destroying another
+  user's data cannot be reachable by guessing an id.
+expected_evidence: >
+  The HTTP status of the submission, and bob's task list before and after, so
+  the row count can be compared.
+requirements: R19, R21
+steps:
+  - do: reset
+  - do: sign_in
+    user: bob
+  - do: capture
+    label: bob's list before alice's attempt, three rows
+  - do: sign_out
+  - do: sign_in
+    user: alice
+  - do: post
+    path: /tasks/5/delete
+  - do: sign_out
+  - do: sign_in
+    user: bob
+  - do: capture
+    label: bob's list after alice's attempt
+  - do: goto
+    path: /tasks/5
+  - do: capture
+    label: bob's task 5, still reachable by its owner

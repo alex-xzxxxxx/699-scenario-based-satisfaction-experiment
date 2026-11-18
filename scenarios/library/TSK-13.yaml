@@ -1,0 +1,34 @@
+id: TSK-13
+use_case: UC3
+category: normal
+severity: high
+preconditions: >
+  Seed state. Alice is signed in. Task 1 is hers and is titled "Draft project
+  outline".
+user_action: Edit that task's title to "Draft project outline v2".
+expected_behaviour: >
+  The new title replaces the old one everywhere it is shown. The old title is
+  gone from the list; the task count is unchanged, because editing a task does
+  not create one.
+expected_evidence: >
+  The task rows before and after the edit.
+requirements: R10
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: the list before the edit
+  - do: goto
+    path: /tasks/1/edit
+  - do: fill
+    field: title
+    value: Draft project outline v2
+  - do: click
+    target: save
+  - do: capture
+    label: immediately after saving
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list after the edit

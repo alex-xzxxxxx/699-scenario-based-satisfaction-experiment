@@ -1,0 +1,22 @@
+id: SES-02
+use_case: UC2
+category: edge
+severity: medium
+preconditions: >
+  Seed state, signed out. The account is stored as "alice".
+user_action: Sign in as "ALICE" with the correct password.
+expected_behaviour: >
+  Accepted. The username is matched without regard to case, which is the same
+  rule that made REG-03 a collision. The name shown afterwards is the stored
+  form, "alice", not the form that was typed.
+expected_evidence: >
+  The URL after signing in, the task rows shown, and the form of the name
+  displayed on the page.
+requirements: R4
+steps:
+  - do: reset
+  - do: sign_in
+    username: ALICE
+    password: alicepass123
+  - do: capture
+    label: signing in with an upper-case username

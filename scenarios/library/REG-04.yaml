@@ -1,0 +1,29 @@
+id: REG-04
+use_case: UC1
+category: edge
+severity: low
+preconditions: >
+  Seed state, signed out.
+user_action: Register the username "  spaced  ", with spaces at both ends, and a valid password.
+expected_behaviour: >
+  Accepted, and the username is stored trimmed. The name shown afterwards is
+  "spaced" with no surrounding spaces, and signing in as "spaced" works.
+  Storing the spaces, or rejecting the registration outright, both fail this
+  scenario.
+expected_evidence: >
+  The name shown after registering, and whether signing in as "spaced"
+  succeeds.
+requirements: R1
+steps:
+  - do: reset
+  - do: register
+    username: '  spaced  '
+    password: goodpass123
+  - do: capture
+    label: the page after registering a padded username
+  - do: sign_out
+  - do: sign_in
+    username: spaced
+    password: goodpass123
+  - do: capture
+    label: signing in as the trimmed name

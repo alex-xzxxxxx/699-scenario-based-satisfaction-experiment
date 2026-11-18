@@ -1,0 +1,27 @@
+id: REG-10
+use_case: UC1
+category: edge
+severity: medium
+preconditions: >
+  Seed state, signed out. The password rule requires at least 8 characters.
+user_action: Register with the 8-character password "pass1234".
+expected_behaviour: >
+  Accepted. Eight is the lower bound and the bound is inclusive, so this is
+  the shortest password that must work, and signing in with it must succeed.
+expected_evidence: >
+  The URL after registering, and whether the account signs in with the same
+  8-character password.
+requirements: R1
+steps:
+  - do: reset
+  - do: register
+    username: eightpw
+    password: pass1234
+  - do: capture
+    label: the page after registering with an 8-character password
+  - do: sign_out
+  - do: sign_in
+    username: eightpw
+    password: pass1234
+  - do: capture
+    label: signing in with the 8-character password

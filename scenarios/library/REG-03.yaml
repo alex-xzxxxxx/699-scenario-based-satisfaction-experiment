@@ -1,0 +1,34 @@
+id: REG-03
+use_case: UC1
+category: failure
+severity: medium
+preconditions: >
+  Seed state, signed out. An account named "alice" already exists.
+user_action: Register "ALICE" with the password "newpass1234".
+expected_behaviour: >
+  Rejected. Usernames are unique without regard to case, so "ALICE" collides
+  with the existing "alice". A visible message says so, and no second account
+  is created. Accepting this would give two accounts that differ only in case.
+expected_evidence: >
+  The message text, and whether the original alice password still signs in
+  afterwards.
+requirements: R2
+steps:
+  - do: reset
+  - do: register
+    username: ALICE
+    password: newpass1234
+  - do: capture
+    label: the response to registering ALICE
+  - do: goto
+    path: /signin
+  - do: fill
+    field: username
+    value: alice
+  - do: fill
+    field: password
+    value: alicepass123
+  - do: click
+    target: submit
+  - do: capture
+    label: the original alice account still signing in

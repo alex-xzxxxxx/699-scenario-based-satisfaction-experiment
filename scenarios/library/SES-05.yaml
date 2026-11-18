@@ -1,0 +1,31 @@
+id: SES-05
+use_case: UC2
+category: adversarial
+severity: critical
+preconditions: >
+  Seed state, signed out. The account "alice" exists; "no_such_user" does
+  not.
+user_action: >
+  Sign in as alice with a wrong password, then sign in as no_such_user with
+  any password, and compare the two messages.
+expected_behaviour: >
+  The two messages are identical. Neither reveals whether the account exists.
+  A message that says "wrong password" in one case and "no such user" in the
+  other lets an attacker enumerate valid usernames one request at a time, and
+  fails this scenario even though both attempts were correctly refused.
+expected_evidence: >
+  The two message strings, so they can be compared word for word, and the
+  outcome of each attempt.
+requirements: R5
+steps:
+  - do: reset
+  - do: sign_in
+    username: alice
+    password: wrongpass999
+  - do: capture
+    label: message for an existing account with the wrong password
+  - do: sign_in
+    username: no_such_user
+    password: wrongpass999
+  - do: capture
+    label: message for an account that does not exist

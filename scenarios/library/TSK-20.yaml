@@ -1,0 +1,36 @@
+id: TSK-20
+use_case: UC3
+category: adversarial
+severity: high
+preconditions: >
+  Seed state. Alice is signed in. Task 1 is hers and is titled "Draft project
+  outline". TSK-14 shows the same rejection through the page.
+user_action: Submit a blank title straight to her own task's edit route, bypassing the form.
+expected_behaviour: >
+  Rejected by the server. The rule that a title cannot be empty is enforced
+  where the data is written, not only in the browser form, so the task keeps
+  its original title. A validation that lives only in the page would let this
+  through.
+expected_evidence: >
+  The HTTP status of the submission, and the task's title before and after.
+requirements: R22, R23
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: the list before the attempt
+  - do: post
+    path: /tasks/1/edit
+    fields:
+      title: ''
+      description: Sections and rough word counts
+      due: '2026-12-01'
+  - do: goto
+    path: /tasks/1
+  - do: capture
+    label: task 1 after the direct submission
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list after the attempt

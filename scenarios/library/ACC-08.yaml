@@ -1,0 +1,32 @@
+id: ACC-08
+use_case: UC5
+category: adversarial
+severity: high
+preconditions: >
+  Seed state. Alice is signed in. The word "supplier" appears in bob's task 5,
+  "Reply to supplier", and in none of alice's four tasks.
+user_action: Search for "supplier".
+expected_behaviour: >
+  No task row is returned, because search runs over the signed-in user's own
+  tasks only. The search term echoed back into the search box is not a match
+  and must not be counted as one. A search that reaches across accounts leaks
+  other users' titles a word at a time.
+expected_evidence: >
+  The task rows returned, the empty-state message if one is shown, and the
+  search term.
+requirements: R20
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: alice's own four tasks, none mentioning a supplier
+  - do: fill
+    field: search
+    value: supplier
+  - do: click
+    target: search_submit
+  - do: capture
+    label: the results of searching for a word only bob's task contains

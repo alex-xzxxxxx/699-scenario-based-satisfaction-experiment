@@ -1,0 +1,34 @@
+id: REG-12
+use_case: UC1
+category: edge
+severity: low
+preconditions: >
+  Seed state, signed out. Usernames are trimmed (REG-04); passwords are not.
+user_action: Register with the password "  spacedpw  ", then try to sign in with and without the spaces.
+expected_behaviour: >
+  Accepted, and the password is stored exactly as typed, spaces included.
+  Signing in with "  spacedpw  " succeeds; signing in with "spacedpw" fails.
+  Trimming the password would make the second attempt succeed and would
+  silently weaken every password that ends in a space.
+expected_evidence: >
+  The outcome of both sign-in attempts, and the message from the one that
+  fails.
+requirements: R1
+steps:
+  - do: reset
+  - do: register
+    username: pwspaces
+    password: '  spacedpw  '
+  - do: capture
+    label: the page after registering with a padded password
+  - do: sign_out
+  - do: sign_in
+    username: pwspaces
+    password: spacedpw
+  - do: capture
+    label: signing in with the spaces stripped - must fail
+  - do: sign_in
+    username: pwspaces
+    password: '  spacedpw  '
+  - do: capture
+    label: signing in with the password exactly as typed - must succeed

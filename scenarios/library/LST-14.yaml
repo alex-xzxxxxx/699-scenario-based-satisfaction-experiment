@@ -1,0 +1,24 @@
+id: LST-14
+use_case: UC4
+category: edge
+severity: low
+preconditions: >
+  Seed state, signed out. A newly registered account owns no tasks.
+user_action: Register a new account and open its task list.
+expected_behaviour: >
+  The list shows an explicit "no tasks" message rather than an empty area with
+  nothing in it. An empty page that leaves the user unsure whether the list
+  loaded fails this scenario.
+expected_evidence: >
+  The task rows, which should be none, and the text of the empty-state
+  message.
+requirements: R16
+steps:
+  - do: reset
+  - do: register
+    username: emptyuser
+    password: goodpass123
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the task list of an account with no tasks

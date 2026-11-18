@@ -1,0 +1,27 @@
+id: SES-03
+use_case: UC2
+category: failure
+severity: high
+preconditions: >
+  Seed state, signed out. The account "alice" exists; "wrongpass999" is not
+  her password.
+user_action: Sign in as alice with the wrong password.
+expected_behaviour: >
+  Rejected, with a visible message and no session created. Requesting the task
+  list afterwards goes to the sign-in page, which is what shows no session was
+  established.
+expected_evidence: >
+  The message text, and the URL reached when the task list is requested after
+  the failed attempt.
+requirements: R5
+steps:
+  - do: reset
+  - do: sign_in
+    username: alice
+    password: wrongpass999
+  - do: capture
+    label: the response to a wrong password for an existing account
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: requesting the task list after the failed sign-in

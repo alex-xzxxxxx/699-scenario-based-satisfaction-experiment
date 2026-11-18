@@ -1,0 +1,33 @@
+id: TSK-01
+use_case: UC3
+category: normal
+severity: high
+preconditions: >
+  Seed state. Alice is signed in and owns four tasks.
+user_action: Create a task with a title only, leaving description and due date empty.
+expected_behaviour: >
+  The task is created and appears in alice's list, making five. Its status is
+  "open", which is the status a new task starts at; no description or due date
+  is shown for it.
+expected_evidence: >
+  The task rows before and after, and the status shown on the new task.
+requirements: R8
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: alice's list before creating
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: Call the dentist
+  - do: click
+    target: create
+  - do: capture
+    label: immediately after submitting the new task
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: alice's list after creating

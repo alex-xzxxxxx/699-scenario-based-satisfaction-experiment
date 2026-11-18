@@ -1,0 +1,27 @@
+id: REG-05
+use_case: UC1
+category: edge
+severity: medium
+preconditions: >
+  Seed state, signed out. The username rule requires 3 to 20 characters.
+user_action: Register the 3-character username "abc".
+expected_behaviour: >
+  Accepted. Three is the lower bound and the bound is inclusive, so this is
+  the shortest name that must work. REG-07 covers the first length that must
+  not.
+expected_evidence: >
+  The URL after registering, and whether the account signs in afterwards.
+requirements: R1
+steps:
+  - do: reset
+  - do: register
+    username: abc
+    password: goodpass123
+  - do: capture
+    label: the page after registering a 3-character name
+  - do: sign_out
+  - do: sign_in
+    username: abc
+    password: goodpass123
+  - do: capture
+    label: signing in as the 3-character name

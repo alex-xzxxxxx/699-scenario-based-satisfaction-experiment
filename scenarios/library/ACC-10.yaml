@@ -1,0 +1,32 @@
+id: ACC-10
+use_case: UC5
+category: integration
+severity: critical
+preconditions: >
+  Seed state. Alice owns tasks 1-4; bob owns 5-7. Alice is signed in with her
+  list open.
+user_action: Sign out as alice, sign in as bob, and open the task list.
+expected_behaviour: >
+  Bob sees his own three tasks and none of alice's four. Switching accounts in
+  one browser is where a cached list or a session left half-replaced shows
+  itself, and the failure looks exactly like a working application until the
+  rows are read.
+expected_evidence: >
+  The task rows before the switch and after it, so the two sets can be
+  compared against the two owners.
+requirements: R13, R20
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: alice's list before the switch
+  - do: sign_out
+  - do: sign_in
+    user: bob
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: bob's list after the switch

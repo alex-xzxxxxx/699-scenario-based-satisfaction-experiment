@@ -1,0 +1,26 @@
+id: SES-04
+use_case: UC2
+category: failure
+severity: high
+preconditions: >
+  Seed state, signed out. No account named "no_such_user" exists.
+user_action: Sign in as "no_such_user" with any password.
+expected_behaviour: >
+  Rejected, with a visible message and no session created. Whether the message
+  is the same as the one for a wrong password is the subject of SES-05; here
+  what matters is that the attempt fails and no session follows.
+expected_evidence: >
+  The message text, and the URL reached when the task list is requested after
+  the failed attempt.
+requirements: R5
+steps:
+  - do: reset
+  - do: sign_in
+    username: no_such_user
+    password: anypass12345
+  - do: capture
+    label: the response to an unknown account
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: requesting the task list after the failed sign-in

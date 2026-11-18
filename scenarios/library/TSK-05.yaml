@@ -1,0 +1,32 @@
+id: TSK-05
+use_case: UC3
+category: edge
+severity: medium
+preconditions: >
+  Seed state. Alice is signed in. The title limit is 100 characters.
+user_action: Create a task with a title of exactly 100 characters.
+expected_behaviour: >
+  Accepted, because 100 is the upper bound and the bound is inclusive. The
+  title is stored whole and shown in full, not cut short. TSK-06 covers the
+  first length that must be rejected.
+expected_evidence: >
+  The task row, and the full title text as shown, so its length can be
+  checked.
+requirements: R8
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks/new
+  - do: fill
+    field: title
+    value: 'Prepare the quarterly supplier review pack and circulate it to finance before the Friday deadline...'
+  - do: click
+    target: create
+  - do: capture
+    label: the response to a 100-character title
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the list, with the full 100-character title

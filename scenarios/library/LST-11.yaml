@@ -1,0 +1,26 @@
+id: LST-11
+use_case: UC4
+category: edge
+severity: low
+preconditions: >
+  Seed state. Alice is signed in and owns four tasks, three open and one
+  completed. The status filter accepts "all", "open" and "completed".
+user_action: Request the task list with the status parameter set to "not_a_status".
+expected_behaviour: >
+  An unrecognised status is treated as "all", so all four of alice's tasks are
+  listed. An error page, an empty list, or a crash all fail this scenario.
+expected_evidence: >
+  The HTTP status of the response and the task rows returned.
+requirements: R15
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: goto
+    path: /tasks
+  - do: capture
+    label: the unfiltered list, four rows
+  - do: goto
+    path: /tasks?status=not_a_status
+  - do: capture
+    label: the list with an unrecognised status value

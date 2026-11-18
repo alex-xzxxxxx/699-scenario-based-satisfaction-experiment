@@ -1,0 +1,20 @@
+id: SES-01
+use_case: UC2
+category: normal
+severity: high
+preconditions: >
+  Seed state, signed out. Alice owns four tasks: "Draft project outline",
+  "Book flights", "Renew library card" and "Buy printer paper".
+user_action: Sign in as alice with the password "alicepass123".
+expected_behaviour: >
+  The sign-in is accepted and alice's task list is shown, carrying all four of
+  her tasks and no task belonging to bob or carol.
+expected_evidence: >
+  The URL after signing in, and every task title visible on the page.
+requirements: R4
+steps:
+  - do: reset
+  - do: sign_in
+    user: alice
+  - do: capture
+    label: alice's task list immediately after signing in
