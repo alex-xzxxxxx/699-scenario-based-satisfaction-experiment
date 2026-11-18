@@ -1,7 +1,0 @@
-{"status": 200, "url": "/signin"}
-{"status": 200, "url": "/style.css"}
-{"status": 302, "url": "/signin"}
-{"status": 200, "url": "/tasks"}
-{"status": 304, "url": "/style.css"}
-{"status": 404, "url": "/tasks/5"}
-{"status": 304, "url": "/style.css"}
