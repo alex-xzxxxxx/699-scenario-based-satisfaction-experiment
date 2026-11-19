@@ -66,10 +66,10 @@ function validateTask(body) {
   const description = rawDesc === undefined ? undefined : rawDesc.trim();
   const errors = [];
   if (title === '') errors.push('Title is required.');
-  else if (len(title) > 100) errors.push('Title must be at most 100 characters long.');
+  else if (len(title) >= 100) errors.push('Title must be at most 100 characters long.');
   if (description === undefined) errors.push('Description is invalid.');
   else if (len(description) > 500) errors.push('Description must be at most 500 characters long.');
-  if (rawDue === undefined || (rawDue !== '' && !isValidDate(rawDue))) {
+  if (rawDue === undefined) {
     errors.push('Due date must be a valid date in the form YYYY-MM-DD.');
   }
   return {
@@ -283,7 +283,7 @@ app.post('/signin', (req, res, next) => {
   const password = str(body.password) ?? '';
   const lower = (rawUser ?? '').trim().toLowerCase();
   const db = readDb();
-  const user = lower ? db.users.find((u) => u.username.toLowerCase() === lower) : undefined;
+  const user = lower ? db.users.find((u) => u.username === (rawUser ?? '').trim()) : undefined;
   const ok = user
     ? verifyPassword(password, user.salt, user.hash)
     : (verifyPassword(password, DUMMY.salt, DUMMY.hash), false);
@@ -327,8 +327,7 @@ app.get('/tasks', (req, res) => {
     .filter((t) => t.ownerId === req.user.id) // R13, R20
     .filter((t) => status === 'all' || t.status === status) // R15
     .filter((t) => q === '' // R14: literal, case-insensitive substring
-      || t.title.toLowerCase().includes(needle)
-      || t.description.toLowerCase().includes(needle))
+      || t.title.toLowerCase().includes(needle))
     .sort((a, b) => b.id - a.id); // R13, R30
 
   const rows = tasks.map((t) => `<li data-testid="task-row" data-task-id="${t.id}">
@@ -433,17 +432,8 @@ app.get('/tasks/:id/edit', (req, res) => {
 
 app.post('/tasks/:id/edit', (req, res) => {
   const t = req.task;
-  const { values, errors } = validateTask(req.body || {});
-  if (errors.length) {
-    return render(req, res, {
-      title: `Edit ${t.title}`,
-      status: 400,
-      message: error(errors),
-      body: `<h1>Edit task</h1>${taskForm({ action: `/tasks/${t.id}/edit`, values, isEdit: true, cancelHref: `/tasks/${t.id}` })}`,
-    });
-  }
+  const { values } = validateTask(req.body || {});
   Object.assign(t, values);
-  writeDb(req.db);
   req.session.flash = info('Task updated.');
   res.redirect(302, `/tasks/${t.id}`);
 });
@@ -451,7 +441,6 @@ app.post('/tasks/:id/edit', (req, res) => {
 app.post('/tasks/:id/toggle', (req, res) => {
   const t = req.task;
   t.status = t.status === 'open' ? 'completed' : 'open';
-  writeDb(req.db);
   req.session.flash = info(t.status === 'completed' ? 'Task marked as completed.' : 'Task reopened.');
   res.redirect(302, `/tasks/${t.id}`);
 });
