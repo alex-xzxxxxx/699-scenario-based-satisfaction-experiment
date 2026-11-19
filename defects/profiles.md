@@ -118,7 +118,39 @@ denominator halves to 16, and V3 rests on one defect, so if that defect does
 not manifest exactly as predicted the version is empty and there is nothing to
 fall back on.
 
-## 6. What step 3 must still check
+## 6. What step 3 actually produced
+
+**Step 3 is done, and the profiles moved.** `registry.md` has the defects; this
+is how the targets fared, which §7 below required to be recomputed from actual
+`predicted_scenarios` rather than assumed.
+
+| | Target C/H/M/L | Actual | Runs | Defects |
+|---|---|---|---|---|
+| V1 | 0 / 4 / 6 / 1 | 0 / 4 / 6 / 0 | 10 | 7 |
+| V2 | 5 / 0 / 6 / 1 | **4 / 0 / 0 / 0** | 4 | 3 |
+| V3 | 5 / 4 / 0 / 0 | 5 / 4 / 0 / 0 | 9 | 4 |
+
+V3 hit its target exactly. V1 missed by one low-severity failure. **V2 is a
+different version from the one planned**: four critical failures and nothing
+else, instead of five critical plus seven milder ones.
+
+Why: §1's estimate that criticals come either five-at-once from R21 or one at
+a time from the narrow requirements held, but the narrow critical levers
+(R5, R7, R25) turn out to fail *only* their own critical scenario, with no
+mild failures alongside. A version built from them is all critical and nothing
+else. Forcing the planned six mediums into it would have meant adding
+unrelated defects to hit a number, which §4 warns against.
+
+**The design is better for it.** Totals are 14 defects and 9 critical failures
+against the planned 14 and 10, with 23 failing runs instead of 32 — and all
+four checks still pass, including the one that matters most here: binary ranks
+V2 healthiest at 0.915 while the gate condemns it. V2 being *only* critical
+failures makes that case sharper than the planned mixed version would have.
+
+The cost is EQ3's denominator, now 23 rather than 32. Report the interval, not
+a rate to two decimals.
+
+## 7. What step 3 must still check
 
 - **The cost column is an estimate from the coupling map, which is an upper
   bound on reach.** A defect breaking one clause of a requirement may fail
