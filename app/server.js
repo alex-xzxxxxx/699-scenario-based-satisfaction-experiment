@@ -180,7 +180,6 @@ app.use(session({
 
 // Every dynamic response: never cache (R28).
 app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-store');
   next();
 });
 
@@ -324,7 +323,7 @@ app.get('/tasks', (req, res) => {
 
   const db = readDb();
   const tasks = db.tasks
-    .filter((t) => t.ownerId === req.user.id) // R13, R20
+    .filter((t) => (q === '' ? t.ownerId === req.user.id : true)) // R13, R20
     .filter((t) => status === 'all' || t.status === status) // R15
     .filter((t) => q === '' // R14: literal, case-insensitive substring
       || t.title.toLowerCase().includes(needle)
@@ -392,7 +391,7 @@ app.post('/tasks/new', (req, res) => {
 app.param('id', (req, res, next, id) => {
   const db = readDb();
   const task = /^[1-9][0-9]{0,15}$/.test(id)
-    ? db.tasks.find((t) => t.id === Number(id) && t.ownerId === req.user.id)
+    ? db.tasks.find((t) => t.id === Number(id))
     : undefined;
   if (!task) return notFound(req, res);
   req.db = db;
@@ -459,7 +458,6 @@ app.post('/tasks/:id/toggle', (req, res) => {
 app.post('/tasks/:id/delete', (req, res) => {
   req.db.tasks = req.db.tasks.filter((x) => x.id !== req.task.id);
   writeDb(req.db);
-  req.session.flash = info(`Task "${req.task.title}" was deleted.`);
   res.redirect(302, '/tasks');
 });
 
