@@ -40,7 +40,7 @@ Purpose:         Generate the application (V0) and its own test suite (suite A)
 Isolation:       A fresh session, carrying only the requirements document. No
                  repository, no folder tree, no use cases, no mention of the
                  study. The holdout rule (T05 notes, step 2) was followed.
-Prompt file:     logs/prompts/P-001.txt   [NOT YET SAVED — see below]
+Prompt file:     logs/prompts/P-001.txt   (saved 2026-11-17)
 Output:          app/ at tag v0, commit 9fa715a
 Tokens / time:   not exposed by the chat interface
 Outcome:         Accepted without hand editing. V0 is the artefact under study;
@@ -53,14 +53,62 @@ Regenerations:   UNCERTAIN — approximately one, not logged at the time.
 did not alter, reinterpret or append to the requirements document it was given.
 Verified by diff against the file at tag `req-v1.1`.
 
-**Two gaps in this record, both to close before M2 is claimed complete:**
+**The two gaps flagged in this record, as they now stand:**
 
-1. *The prompt text itself is not saved.* `logs/prompts/P-001.txt` does not
-   exist. Copy the exact message sent to the model into that file. Without it,
-   the generation is not reproducible by anyone else, which is the one
-   reproducibility claim that does not depend on model determinism.
-2. *The regeneration count is a recollection, not a record.* W03 asks for it
-   explicitly. Check the session history and record the actual number; if it
-   cannot be recovered, both this entry and W03 say so rather than stating a
-   figure. An uncertain number reported as uncertain is defensible. An
-   uncertain number reported as "1" is not.
+1. *The prompt text is saved* (2026-11-17). It stores the instruction sent —
+   "Build this application. Follow the requirements exactly." — and names the
+   requirements document that followed it rather than duplicating it. That is
+   sufficient for reproduction, because the document is fixed at tag
+   `req-v1.1` and was returned byte-identical. Anyone can reconstruct the
+   exact message from the two.
+2. *The regeneration count is recorded as uncertain*, which is what this
+   entry asked for. It is approximately one and was not logged at the time.
+   Reported as uncertain in W03 and in the report's limitations; not stated
+   as a figure.
+
+### P-002 — Judge smoke test (T18)
+```
+Date:            2026-11-10
+Model:           Gemini (Google)
+Model version:   gemini-3.6-flash, requested and returned (D-010)
+Prompt version:  not assigned — see below
+Temperature:     not recorded
+Purpose:         Confirm the judge API is reachable, returns parseable JSON,
+                 and serves a stable model version across a run
+Prompt file:     NOT RETAINED
+Output:          records/W01/judge-smoke-test.json
+Tokens / time:   median 3.08 s, max 11.09 s per call
+Outcome:         API confirmed reachable. 15 of 25 calls returned valid JSON;
+                 the other 10 were HTTP 503, not verdicts.
+```
+
+**The prompt sent in this run was not retained, and that is a gap in the
+record this log exists to prevent.** It is logged here rather than omitted,
+because a prompt that was sent and lost is part of the history.
+
+The consequence is narrow but real. This run cannot answer whether the judge
+was offered the three verdicts proposal §3.7 defines. All 15 parseable
+responses returned `not_satisfied`; none returned `satisfied` and none
+returned `uncertain`. With the prompt gone there is no way to tell whether
+that reflects the evidence it was shown, a two-value vocabulary, or a
+one-value one.
+
+This was a connectivity test, so a single repeated input and a single verdict
+are what it was built to produce, and `stable_under_repetition` is the result
+it was after. It is not evidence that the judging prompt is sound, and it was
+never meant to be.
+
+**Before T25**, the judging prompt is written, saved as `logs/prompts/P-003.txt`,
+logged here as P-003 with `Prompt version: v0.1`, and must satisfy §3.7 and
+§3.8:
+
+- offer all three verdicts — Satisfied, Not satisfied, Uncertain — and define
+  Uncertain as insufficient evidence rather than as a middle grade;
+- require the judge to cite the specific evidence supporting its decision;
+- be validated against inputs that are known to warrant each of the three,
+  so that all three are demonstrably reachable. A prompt that cannot return
+  `satisfied` scores every version at zero, and a prompt that cannot return
+  `uncertain` removes the protection §3.7 added on purpose.
+
+Frozen at M5 (Week 6). After that, no edit, and any attempt is recorded here
+as a rejected change.

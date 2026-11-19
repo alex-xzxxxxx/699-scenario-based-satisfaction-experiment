@@ -137,5 +137,11 @@ adjusted afterwards.
 - Confidence intervals. D-005 fixes Wilson for critical false acceptance; the
   rest is T28.
 - The agreement statistic for EQ2 and its ceiling. D-004 and T27.
-- **Whether the judge prompt currently offers U at all.** §3.8 requires it;
-  the T18 smoke test recorded only `not_satisfied`. To be checked before T25.
+- **Whether the judge prompt offers U at all — checked 2026-11-19, and it
+  cannot be determined.** No judging prompt exists in the repository: the one
+  sent in the T18 smoke test was not retained (P-002). All 15 parseable
+  responses in that run returned `not_satisfied`, with no `satisfied` and no
+  `uncertain`, but with the prompt gone that distinguishes nothing. The
+  judging prompt must be written, saved and validated against inputs
+  warranting each of the three verdicts before T25, per the P-002 entry in
+  `logs/prompt-log.md`.
