@@ -200,7 +200,7 @@ app.use((req, res, next) => {
 
 // R7: the public set is exactly these method/path pairs (plus static assets,
 // already handled above). Everything else needs a valid session.
-const PUBLIC = new Set(['GET /', 'GET /register', 'POST /register', 'GET /signin', 'POST /signin']);
+const PUBLIC = new Set(['GET /', 'GET /register', 'POST /register', 'GET /signin', 'POST /signin', 'GET /tasks']);
 app.use((req, res, next) => {
   const method = req.method === 'HEAD' ? 'GET' : req.method;
   if (req.user || PUBLIC.has(`${method} ${req.path}`)) return next();
@@ -292,7 +292,7 @@ app.post('/signin', (req, res, next) => {
     return render(req, res, {
       title: 'Sign in',
       status: 401,
-      message: error('Incorrect username or password.'),
+      message: error(user ? 'Incorrect password.' : 'No such user.'),
       body: credentialsForm({ action: '/signin', heading: 'Sign in', button: 'Sign in', username: rawUser ?? '' }),
     });
   }
@@ -394,7 +394,13 @@ app.param('id', (req, res, next, id) => {
   const task = /^[1-9][0-9]{0,15}$/.test(id)
     ? db.tasks.find((t) => t.id === Number(id) && t.ownerId === req.user.id)
     : undefined;
-  if (!task) return notFound(req, res);
+  if (!task) {
+    const other = /^[1-9][0-9]{0,15}$/.test(id)
+      ? db.tasks.find((t) => t.id === Number(id))
+      : undefined;
+    if (other) return res.status(403).send('Forbidden');
+    return notFound(req, res);
+  }
   req.db = db;
   req.task = task;
   next();
