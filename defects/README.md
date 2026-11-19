@@ -166,9 +166,14 @@ observation could be attributed to one version's set.
 The count is driven by EQ3, which measures how often a judge accepts software
 that is broken. Its denominator is the number of (scenario, version) pairs
 where a defect actually manifests — not the number of defects, and not the 141
-defective runs. A defect typically shows up in two or three scenarios, so four
-to six defects per version gives roughly ten to fifteen such runs per version,
-thirty to forty-five in total.
+defective runs.
+
+**This paragraph previously estimated four to six defects per version, giving
+thirty to forty-five failing runs. That was wrong**, and `profiles.md` §2 shows
+why: most requirements are referenced by one or two scenarios rather than
+three, so outside the R21 ownership check a defect buys one or two failing runs
+and low-severity failures cost a defect each. The recommended design in
+`profiles.md` is about fourteen defects for thirty-two failing runs.
 
 That is a workable denominator and a wide confidence interval. **Say so in the
 report rather than quoting a false-acceptance rate to two decimal places.**
