@@ -1,15 +1,12 @@
 # Seeded defect registry
 
-Written **before** V1, V2 and V3 are built, per `README.md` §6. Selection
-began only after the library was frozen at `scenarios-v1` (D-012).
+Written before building, per `README.md` §6, and **revised once during step 4**
+when the first build falsified two predictions. §7 of this file records what
+changed and why; the revision is dated and kept rather than overwritten.
 
-`predicted_scenarios` is recorded here before any run. It is never revised
-afterwards, and the scenarios are frozen and cannot be adjusted to match.
-`observed_scenarios` and the suite columns are filled in after the runs, as
-results.
-
-**Defects were chosen without reference to what suite A or suite B covers**
-(§1). Whether a suite catches one is a result, recorded below after the fact.
+Selection began only after the library was frozen at `scenarios-v1` (D-012),
+and no defect was chosen or rejected by reference to what suite A or suite B
+covers (§1).
 
 ---
 
@@ -17,19 +14,17 @@ results.
 
 | | Defects | Critical | High | Medium | Low | Failing runs | Gate |
 |---|---|---|---|---|---|---|---|
-| V1 | 7 | 0 | 4 | 6 | 0 | 10 | clear |
-| V2 | 3 | 4 | 0 | 0 | 0 | 4 | **FLAGGED** |
-| V3 | 4 | 5 | 4 | 0 | 0 | 9 | **FLAGGED** |
+| V1 | 7 | 0 | 3 | 7 | 0 | 10 | clear |
+| V2 | 3 | 4 | 2 | 0 | 0 | 6 | **FLAGGED** |
+| V3 | 4 | 5 | 3 | 0 | 0 | 8 | **FLAGGED** |
 
-**14 defects, 23 failing runs, 9 critical failures.**
-
-Scores, assuming every scenario returns S or N:
+**14 defects, 24 failing runs, 9 critical failures.**
 
 | | Binary | Linear | Geometric |
 |---|---|---|---|
-| V1 | 0.787 | 0.800 | **0.832** |
-| V2 | **0.915** | **0.867** | 0.808 |
-| V3 | 0.809 | 0.733 | 0.665 |
+| V1 | 0.787 | 0.808 | **0.844** |
+| V2 | **0.872** | **0.817** | 0.761 |
+| V3 | 0.830 | 0.758 | 0.689 |
 
 ```
 binary      V2 > V3 > V1
@@ -38,124 +33,144 @@ geometric   V1 > V2 > V3
 ```
 
 Three different orderings, so EQ1 has an answer under every view. **Binary
-ranks V2 the healthiest version of the three at 0.915, and the critical gate
-flags it as unacceptable** — V2 fails only four scenarios, and all four are
-critical. That is proposal §3.7's "a single score can hide a security failure",
-produced by construction.
+ranks V2 the healthiest of the three while the critical gate condemns it** —
+proposal §3.7's single score hiding a security failure, produced by
+construction.
 
-The three versions are deliberately different in kind:
+- **V1 — sloppy but safe.** Ten failures, none critical. Binary ranks it worst, geometric ranks it best.
+- **V2 — insecure but tidy.** Six failures, four critical. Binary and linear both rank it best; the gate condemns it.
+- **V3 — broken throughout.** Eight failures, five critical. Geometric ranks it worst.
 
-- **V1 — sloppy but safe.** Ten failures, not one of them critical. Binary
-  ranks it worst; geometric ranks it best.
-- **V2 — insecure but tidy.** Four failures, all critical, nothing else wrong.
-  Binary and linear both rank it best; the gate condemns it.
-- **V3 — broken throughout.** Nine failures including five critical.
-  Geometric ranks it worst.
+## Verification (§7)
+
+Built on branches `defect/v1`, `defect/v2`, `defect/v3` from the commit
+carrying the same `app/server.js` as tag `v0`; only `server.js` is touched.
+All 47 scenarios were executed against each version and against a V0 baseline,
+and each version's traces compared with V0's scenario by scenario.
+
+| | Predicted | Manifested | Predicted but unchanged | Step errors |
+|---|---|---|---|---|
+| V1 | 10 | 10 | none | 0 |
+| V2 | 6 | 6 | none | 0 |
+| V3 | 8 | 8 | none | 0 |
+
+Every defect manifests in every scenario predicted for it, and no scenario
+predicted to change was unaffected.
+
+### Evidence footprint is wider than the failure set
+
+Some scenarios' evidence changed without their expected behaviour being
+violated. These are recorded, not counted as failures, and **not pre-judged**
+— whether they are satisfied is for the judge and the human reference to
+decide, which is the measurement.
+
+| Version | Also changed | Why |
+|---|---|---|
+| V2 | ACC-02, ACC-03, ACC-04 | D2-02 returns 403 where V0 returned 404. The write is still refused and bob's task is still unchanged, which is what those scenarios require. |
+| V2 | SES-03, SES-04, REG-07, REG-09, REG-12 | D2-01 changed the sign-in failure message. Every one of these still refuses the attempt and creates no session. |
+| V3 | INT-02 | D3-03 removed the delete confirmation. The task is still deleted, which is what INT-02's sequence requires. |
+
+That eight of V2's fourteen changed traces are not intended failures is worth
+stating plainly in the report: a defect's evidence footprint and its failure
+set are different things, and only the second is ground truth.
 
 ---
 
 ## V1 — seven defects, none critical
 
-### D1-01 · R28 · high
-- **Location** `server.js`, `render()` response headers
-- **Change** The `Cache-Control: no-store` header is not set on protected responses.
-- **Predicted** SES-13
-- **Note** Only detectable because D-014 made the collector record response headers. Before that change this defect would have been invisible to the judge.
+| Id | Req | Defect severity | Location | Change | Predicted = observed |
+|---|---|---|---|---|---|
+| D1-01 | R11 | high | `POST /tasks/:id/toggle` | status toggled in memory, `writeDb` not called | TSK-15, INT-02 |
+| D1-02 | R10 | high | `POST /tasks/:id/edit` | `Object.assign` runs, `writeDb` not called | TSK-13, INT-02 |
+| D1-03 | R23 | medium | `POST /tasks/:id/edit` | the validation guard is skipped on edit | TSK-20, TSK-14 |
+| D1-04 | R8 | medium | `validateTask` | `len(title) > 100` became `>= 100` | TSK-05 |
+| D1-05 | R26 | medium | `validateTask` | `isValidDate` no longer called | TSK-10, TSK-11 |
+| D1-06 | R14 | medium | `GET /tasks` | search matches titles only | LST-05 |
+| D1-07 | R4 | medium | `POST /signin` | username matched case-sensitively | SES-02 |
 
-### D1-02 · R11 · high
-- **Location** `server.js:451`, `POST /tasks/:id/toggle`
-- **Change** The status is toggled on the in-memory task but `writeDb` is not called, so it reverts on the next request.
-- **Predicted** TSK-15, INT-02
+D1-03's severity differs from its scenario's: medium as a defect — wrong input
+accepted, recoverable — but TSK-20 is high, because it tests that the rule
+holds on the server and not only in the form.
 
-### D1-03 · R10 · high
-- **Location** `server.js:445`, `POST /tasks/:id/edit`
-- **Change** `Object.assign(t, values)` runs but `writeDb` is not called, so the edit does not survive.
-- **Predicted** TSK-13, INT-02
+## V2 — three defects, four critical scenarios
 
-### D1-04 · R23 · medium
-- **Location** `server.js:437`, `POST /tasks/:id/edit`
-- **Change** The `errors.length` branch is skipped on edit, so an empty title is accepted where creation still rejects it.
-- **Predicted** TSK-20, TSK-14
-- **Severity mismatch** The defect is medium by Table 8 — wrong input accepted, recoverable — but TSK-20 is a high-severity scenario, because it tests that the rule is enforced on the server rather than only in the form.
-
-### D1-05 · R8 · medium
-- **Location** `server.js:69`, `validateTask`
-- **Change** `len(title) > 100` becomes `>= 100`, so the inclusive upper bound is rejected.
-- **Predicted** TSK-05
-- **Note** TSK-06 still passes: 101 characters are still rejected, just for the wrong reason.
-
-### D1-06 · R26 · medium
-- **Location** `server.js:72`, `validateTask`
-- **Change** The `isValidDate` call is dropped, so any non-empty string is accepted as a due date.
-- **Predicted** TSK-10, TSK-11
-
-### D1-07 · R14 · medium
-- **Location** `server.js:329`, `GET /tasks`
-- **Change** The search matches titles only; the description clause is removed.
-- **Predicted** LST-05
-- **Note** LST-04 still passes — it matches on title.
-
-## V2 — three defects, all critical, nothing else
-
-### D2-01 · R5 · critical
-- **Location** `server.js:292`, `POST /signin`
-- **Change** The failure message distinguishes the two cases: "No such user." when the account is not found, "Incorrect password." when it is.
-- **Predicted** SES-05
-- **Note** SES-03 and SES-04 still pass: both attempts are still rejected and still create no session. Only the indistinguishability is gone, which is the whole of what SES-05 tests.
-
-### D2-02 · R25 · critical
-- **Location** `server.js:397`, `app.param('id')`
-- **Change** Returns 403 when the task exists but belongs to someone else, and 404 only when no such task exists — so the two become distinguishable.
-- **Predicted** ACC-01, ACC-06
-
-### D2-03 · R7 · critical
-- **Location** `server.js`, the authentication middleware guarding `/tasks`
-- **Change** The guard is not applied to `GET /tasks`, so the list renders without a session.
-- **Predicted** SES-08
+| Id | Req | Defect severity | Location | Change | Predicted = observed |
+|---|---|---|---|---|---|
+| D2-01 | R5 | critical | `POST /signin` | the failure message names which of the two went wrong | SES-05 |
+| D2-02 | R25 | critical | `app.param('id')` | 403 when the task exists but belongs to someone else | ACC-01, ACC-06 |
+| D2-03 | R7 | critical | the R7 public set | `GET /tasks` added to the public set | SES-08, SES-07, SES-13 |
 
 ## V3 — four defects, five critical scenarios from one of them
 
-### D3-01 · R21 · critical
-- **Location** `server.js:395`, `app.param('id')`
-- **Change** `&& t.ownerId === req.user.id` is removed from the lookup, so any signed-in user reaches any task by id.
-- **Predicted** ACC-01, ACC-02, ACC-03, ACC-04, ACC-06
-- **Note** One dropped clause, five critical scenarios. The largest single lever in the library, and an entirely ordinary mistake.
+| Id | Req | Defect severity | Location | Change | Predicted = observed |
+|---|---|---|---|---|---|
+| D3-01 | R21 | critical | `app.param('id')` | `&& t.ownerId === req.user.id` removed | ACC-01, ACC-02, ACC-03, ACC-04, ACC-06 |
+| D3-02 | R28 | high | the R28 header middleware | `Cache-Control: no-store` no longer set | SES-13 |
+| D3-03 | R12 | low | `POST /tasks/:id/delete` | the confirmation flash is not set | TSK-17 |
+| D3-04 | R20 | critical | `GET /tasks` | a non-empty search runs over all tasks | ACC-08 |
 
-### D3-02 · R6 · critical
-- **Location** `server.js:308`, `POST /signout`
-- **Change** `req.session.regenerate` is replaced by setting the flash on the existing session, so signing out leaves the session usable.
-- **Predicted** SES-07, SES-13
-- **Severity mismatch** Critical as a defect — it breaks sign-out — but both scenarios it fails are high. ACC-10 is **not** predicted to fail: `signIn` regenerates the session on its own (`server.js:218`), so switching accounts still works.
+One dropped clause in D3-01 fails five critical scenarios — the largest single
+lever in the library, and an ordinary mistake.
 
-### D3-03 · R12 · low
-- **Location** `server.js:462`, `POST /tasks/:id/delete`
-- **Change** The confirmation flash is not set; the deletion happens silently.
-- **Predicted** TSK-17
-- **Severity mismatch** The clearest case of the kind §4 is about: a cosmetic defect, low by Table 8, failing a high-severity scenario. Scoring weights the scenario, EQ1 compares against the defect.
+D3-02 is only visible because D-014 made the collector record response
+headers. Before that change this defect would have been invisible to the judge.
 
-### D3-04 · R20 · critical
-- **Location** `server.js:329`, `GET /tasks`
-- **Change** When the search term is non-empty, the query runs over all tasks instead of the signed-in user's, so search reaches across accounts.
-- **Predicted** ACC-08
-- **Note** LST-04 and LST-05 still pass: no other account's task contains "flights" or "airlines", so a global search returns the same rows for them. Only ACC-08, which searches for a word unique to bob's task, exposes it.
+D3-03 is the case §4 is about: a cosmetic defect, low by Table 8, failing a
+high-severity scenario. Scoring weights the scenario; EQ1 compares against the
+defect.
 
 ---
 
-## Results — filled in after the runs
+## §7 — the step 4 revision
 
-| Defect | Observed scenarios | Suite A | Suite B |
-|---|---|---|---|
-| D1-01 | | | |
-| D1-02 | | | |
-| D1-03 | | | |
-| D1-04 | | | |
-| D1-05 | | | |
-| D1-06 | | | |
-| D1-07 | | | |
-| D2-01 | | | |
-| D2-02 | | | |
-| D2-03 | | | |
-| D3-01 | | | |
-| D3-02 | | | |
-| D3-03 | | | |
-| D3-04 | | | |
+Two defects in the first build reached much further than predicted, and both
+were replaced on 19 November, before any judged run.
+
+**Replaced: R6, sign-out does not destroy the session.** Intended to fail
+SES-07 and SES-13. It failed those and also broke ACC-10, INT-01, REG-01,
+REG-04, REG-05, REG-10 and REG-12, because a still-valid session makes R29
+redirect `/signin` to `/tasks`, so the harness's `sign_in` helper finds no
+form and times out. **Ten scenarios hit a 30-second Playwright timeout,
+including ACC-02, ACC-03 and ACC-04** — which meant three of V3's five
+critical scenarios were failing on a broken setup rather than on the ownership
+defect they exist to test. That corrupts the evidence V3 is for, and breaks
+§7's requirement that all 47 execute without a runner error.
+
+There is no narrow version of this defect. Any sign-out that leaves the
+session usable breaks every scenario that signs out and back in, because of
+the R29 redirect. Replaced by the R28 header defect, which fails SES-13
+cleanly.
+
+**Replaced: R2, username uniqueness case-sensitive.** Same shape, one
+scenario: REG-03 registers "ALICE", the duplicate is now accepted, the account
+is signed in, and the scenario's later `/signin` navigation is redirected to
+`/tasks`, so the fill timed out. Replaced by the R4 case-sensitive sign-in
+defect, which fails SES-02 with no navigation side effect.
+
+**The general lesson, for the report.** A defect that changes authentication
+state breaks the harness's navigation, not just the scenario under test. The
+failure looks like a scenario failure and is not one. Nothing in the
+admissibility criteria of §2 catches this; the criterion it most resembles is
+"one localized change", and both defects were exactly that. Found only by
+building and running, which is the argument for step 4 existing at all.
+
+---
+
+## Results — filled in after judging
+
+| Defect | Suite A | Suite B |
+|---|---|---|
+| D1-01 | | |
+| D1-02 | | |
+| D1-03 | | |
+| D1-04 | | |
+| D1-05 | | |
+| D1-06 | | |
+| D1-07 | | |
+| D2-01 | | |
+| D2-02 | | |
+| D2-03 | | |
+| D3-01 | | |
+| D3-02 | | |
+| D3-03 | | |
+| D3-04 | | |
