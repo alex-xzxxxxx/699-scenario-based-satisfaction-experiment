@@ -98,6 +98,39 @@ are what it was built to produce, and `stable_under_repetition` is the result
 it was after. It is not evidence that the judging prompt is sound, and it was
 never meant to be.
 
+### P-003 — Judging prompt (T18, T25)
+```
+Date:            2026-11-20
+Model:           Gemini (Google)
+Model version:   gemini-3.6-flash requested; the runner halts if another is served (D-011)
+Prompt version:  v0.1 — NOT YET VALIDATED
+Temperature:     0
+Purpose:         Decide, from one evidence bundle, whether a scenario was satisfied
+Prompt file:     logs/prompts/P-003.txt
+Caller:          harness/judge.py
+Output:          one JSON object: verdict, the evidence cited, the reason
+```
+
+Written to close the gap P-002 records. It offers the three verdicts of
+proposal §3.7, defines Uncertain as insufficient evidence rather than a middle
+grade, and requires the judge to cite what it read, per §3.8.
+
+**It has not been run.** Validation is the first step of
+`records/W06/demo-walkthrough.md`: three inputs chosen to warrant one verdict
+each — ACC-01 on V0 for satisfied, ACC-01 on V3 for not satisfied, and
+`records/W06/prompt-validation/uncertain-fixture` for uncertain, a real trace
+truncated so the page text the scenario asks for was never captured. Until all
+three come back as intended, the prompt is not known to be able to return them,
+which is exactly what P-002 could not establish.
+
+What was checked without the API key: the prompt builds from a real bundle at
+4,700 bytes with no version word and no absolute path in it, and the reply
+parser accepts bare JSON, fenced JSON and JSON with prose around it while
+rejecting an unknown verdict, an empty evidence list and a non-JSON reply.
+
+Frozen at M5 (Week 6). After that, no edit, and any attempt is recorded here
+as a rejected change.
+
 **Before T25**, the judging prompt is written, saved as `logs/prompts/P-003.txt`,
 logged here as P-003 with `Prompt version: v0.1`, and must satisfy §3.7 and
 §3.8:

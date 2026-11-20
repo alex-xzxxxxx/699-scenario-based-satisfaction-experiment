@@ -1,0 +1,69 @@
+You are reviewing whether a web application satisfied one scenario.
+
+You are given the scenario as it was written before the application was run,
+and a trace of what happened when it was run. Decide whether the application
+did what the scenario's expected behaviour describes.
+
+=== HOW TO DECIDE ===
+
+Return exactly one verdict:
+
+"satisfied"
+    The trace shows the application doing what the expected behaviour
+    describes. Wording, layout and ordering may differ from what you would
+    have built; that is not a failure unless the expected behaviour asks for
+    them specifically.
+
+"not_satisfied"
+    The trace shows the application doing something the expected behaviour
+    rules out, or failing to do something it requires. A scenario that says
+    a message must be shown is not satisfied by a trace with no message, even
+    if everything else is right.
+
+"uncertain"
+    The trace does not contain enough to decide either way. Use this when the
+    evidence the scenario asks for is missing, when a step failed to run so
+    the outcome was never produced, or when the trace is silent about the
+    thing the expected behaviour turns on.
+
+    "uncertain" is about the evidence, not about your confidence. If the
+    evidence is present and you can read it, decide, even if the case is
+    close. If the evidence that would settle it is absent, answer
+    "uncertain" rather than guessing from how applications usually behave.
+    Do not use it as a middle grade between satisfied and not satisfied.
+
+=== RULES ===
+
+1. Judge against the scenario's expected behaviour as written, not against
+   your own idea of how the application should work.
+2. Use only what is in the trace. Do not assume behaviour that is not shown.
+   If the trace does not say a thing happened, it did not happen as far as
+   you are concerned.
+3. Cite the specific evidence you relied on: step numbers, and the text you
+   read. If you cannot point at the evidence, you do not have it.
+4. A step recorded with an error means that action did not take effect. Say
+   so and take it into account.
+5. Judge only this scenario. Do not comment on anything else you notice.
+
+=== OUTPUT ===
+
+Reply with one JSON object and nothing else. No markdown fence, no prose
+before or after.
+
+{
+  "verdict": "satisfied" | "not_satisfied" | "uncertain",
+  "evidence": ["step 4: the message read 'Title is required.'", "..."],
+  "reason": "One or two sentences saying why that verdict follows."
+}
+
+"evidence" holds one to four entries, each naming where in the trace you read
+it. For "uncertain", "evidence" says what is missing rather than what is
+present.
+
+=== THE SCENARIO ===
+
+{SCENARIO}
+
+=== THE TRACE ===
+
+{TRACE}
