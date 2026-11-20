@@ -2,7 +2,8 @@
 
 **HOLDOUT. Never shown to the implementation model.**
 
-Drafted from `use-cases.md` (UC1–UC5) and `app/REQUIREMENTS.md` v1.1, in the
+Drafted from `use-cases.md` (UC1–UC5, as it stood on 16 November) and
+`app/REQUIREMENTS.md` v1.1, in the
 template of Appendix B Table B1. Severity follows Table 8 and is assigned here,
 before any result exists.
 

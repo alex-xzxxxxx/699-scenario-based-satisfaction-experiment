@@ -2,9 +2,17 @@
 
 Nothing in this folder may ever be shown to the implementation model.
 
-The library is built in Weeks 3–5 from the five use cases, validated against the
+The library is built in Weeks 3–5 from the use cases, validated against the
 Appendix B checklist, categorized (normal / failure / edge / adversarial /
 integration) and given a severity. Target: about 40–50 scenarios.
+
+`use-cases.md` was refined from five use cases into fifteen on 19 November
+(D-016), after this library was frozen. The `use_case` field in each scenario
+file names one of the five **areas**, UC1 to UC5, and is deliberately left
+alone: editing 47 frozen files for a label nothing in the harness or the
+analysis reads would change the holdout set after it was tagged. The finer
+placement — which of the fifteen each scenario belongs to — is the table at
+the end of `use-cases.md`, which accounts for all 47 exactly once.
 
 Frozen and tagged at the end of Week 5 (T12, C02). After that tag, no scenario
 is added, removed, or reworded. If one has to change, the change is recorded in
