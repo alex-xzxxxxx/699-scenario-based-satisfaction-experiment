@@ -27,6 +27,7 @@ downstream of it.
 | D-013 | 2026-11-17 | 4 | EQ4 re-scoped to what each method can find, not how much | T16, T26, T30–T33; EQ4 | First judge run (T25) |
 | D-014 | 2026-11-17 | 5 | Evidence records an allowlist of response headers; `network.jsonl` scrubbed | T14, T15, T24, T25; SES-13 | First judge run (T25) |
 | D-015 | 2026-11-17 | 5 | Scoring restated from proposal §3.7: ternary verdicts, per-source scores | T16, T20, T25–T28; EQ1–EQ4 | First judge run (T25) |
+| D-016 | 2026-11-19 | 5 | Use cases refined from 5 into 15; no behaviour or scenario changed | `use-cases.md`; report method | — |
 
 ---
 
@@ -511,7 +512,44 @@ the EQ2 agreement statistic (D-004, T27).
 **Affects:** T16, T20, T25, T26, T27, T28; EQ1, EQ2, EQ3, EQ4.
 **Cannot change after:** the first judge run of the main experiment (T25).
 
-## D-016 — <next decision>
+## D-016 — Use cases refined from 5 into 15, without changing behaviour
+**Date:** 2026-11-19
+**Decision:** `scenarios/use-cases.md` is refined from five use cases into
+fifteen. The original UC1–UC5 become five areas, and each area is split into
+two to four use cases numbered UC1.1, UC1.2 and so on. Every flow, alternate
+and exception in the original document is kept and placed in exactly one of
+the new use cases. A table at the end of the document places each of the 47
+accepted scenarios in its use case.
+
+**Reason:** The professor's feedback was that five use cases is too few. The
+original five each carried many alternate and exception flows — UC2 alone
+held sign-in, sign-out, session expiry, cached pages after sign-out and the
+redirect away from sign-in — so the count understated what the document
+covers. Splitting them makes each use case one user goal, which is what the
+feedback asked for, and makes the link from scenario to use case finer.
+
+**What did not change:** the requirements (v1.1), V0, both suites, the
+scenario library, `validation.csv`, the seeded defects and every threshold.
+No use case introduces behaviour that is not already in the requirements; the
+one wording that could have read as new — an unknown status filter — is
+taken from the route table in `app/REQUIREMENTS.md`.
+
+**Why the scenario files are not relabelled:** the library was frozen and
+tagged `scenarios-v1` before this refinement, and V1–V3 were built against
+it. Editing the `use_case` field of 47 frozen files to carry the new numbers
+would change the holdout set after it was tagged, for a label no part of the
+harness or the analysis reads. So the field keeps naming the area (`UC5`),
+which is still correct, and the finer placement lives in `use-cases.md`.
+
+**Considered and not done:** adding features to the application to produce
+more use cases. That would mean a requirements v2.0, regenerating V0,
+extending both suites, reopening the frozen library and re-seeding V1–V3 —
+most of Weeks 1–4 again, for a change the feedback did not require.
+
+**Affects:** `scenarios/use-cases.md` only; report §method (use-case count).
+**Cannot change after:** —
+
+## D-017 — <next decision>
 **Date:**
 **Decision:**
 **Reason:**
