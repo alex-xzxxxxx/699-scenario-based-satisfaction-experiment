@@ -103,7 +103,7 @@ never meant to be.
 Date:            2026-11-20
 Model:           Gemini (Google)
 Model version:   gemini-3.6-flash requested; the runner halts if another is served (D-011)
-Prompt version:  v0.1 — NOT YET VALIDATED
+Prompt version:  v0.1 — validated 2026-11-20, all three verdicts reachable
 Temperature:     0
 Purpose:         Decide, from one evidence bundle, whether a scenario was satisfied
 Prompt file:     logs/prompts/P-003.txt
@@ -115,13 +115,31 @@ Written to close the gap P-002 records. It offers the three verdicts of
 proposal §3.7, defines Uncertain as insufficient evidence rather than a middle
 grade, and requires the judge to cite what it read, per §3.8.
 
-**It has not been run.** Validation is the first step of
-`records/W06/demo-walkthrough.md`: three inputs chosen to warrant one verdict
-each — ACC-01 on V0 for satisfied, ACC-01 on V3 for not satisfied, and
-`records/W06/prompt-validation/uncertain-fixture` for uncertain, a real trace
-truncated so the page text the scenario asks for was never captured. Until all
-three come back as intended, the prompt is not known to be able to return them,
-which is exactly what P-002 could not establish.
+**Validated 2026-11-20, on the student's machine.** Four calls, each on an
+input chosen to warrant one verdict, and every one came back as intended:
+
+| Input | Verdict | Why it was expected |
+|---|---|---|
+| ACC-01 on V1 | `satisfied` | V1's defects are R11, R10, R23, R8, R26, R14, R4 — none touches ACC-01's R17/R21, so it behaves as V0 does here |
+| ACC-01 on V2 | `not_satisfied` | D2-02 returns 403 rather than 404: refused, but no longer indistinguishable |
+| ACC-01 on V3 | `not_satisfied` | D3-01 dropped the ownership check |
+| `records/W06/prompt-validation/uncertain-fixture` | `uncertain` | a real trace truncated so the page text the scenario asks for was never captured |
+
+All three verdicts of §3.7 are therefore reachable, which is exactly what
+P-002 could not establish. Two failure modes are ruled out: a prompt that
+cannot return `satisfied` would have scored every version zero, and one that
+cannot return `uncertain` would have removed §3.7's protection against
+guessing across all 540 judged runs, in both cases while looking healthy.
+
+The satisfied case was taken on V1 rather than V0 by accident, and is the
+better test. **V1 is a defective build, and the judge still found this
+scenario satisfied on it**, which shows it rules on the scenario rather than
+on the version. A V0 run could not have shown that.
+
+Noted for EQ2 rather than as a problem: V2 is the arguable case — a 403 is
+still a refusal, so a reviewer could call it satisfied — and the model called
+it `not_satisfied`. Whether the human reference agrees is a result either way,
+and the human judgment must be made without reference to this verdict.
 
 What was checked without the API key: the prompt builds from a real bundle at
 4,700 bytes with no version word and no absolute path in it, and the reply

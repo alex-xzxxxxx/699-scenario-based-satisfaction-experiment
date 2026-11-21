@@ -30,12 +30,20 @@ a prompt that cannot return `satisfied` scores every version zero, and one
 that cannot return `uncertain` silently removes the protection proposal §3.7
 added on purpose.
 
+**The defect branches do not carry `harness/judge.py`** — they were cut before
+it existed. Return to the working branch before judging anything; the evidence
+bundles are untracked and survive the switch.
+
 ```
-python -m harness.judge --bundle <ACC-01 run on V0>                  # expect satisfied
-python -m harness.judge --bundle <ACC-01 run on V3>                  # expect not_satisfied
+git checkout feature/week01-v1
+python -m harness.judge --bundle evidence/<run id>      # one call per bundle
 python -m harness.judge --bundle records/W06/prompt-validation/uncertain-fixture
-                                                                     # expect uncertain
 ```
+
+**Done on 2026-11-20, and all three verdicts came back as intended** —
+`satisfied` on a version with no defect touching ACC-01, `not_satisfied` on
+V2 and V3, `uncertain` on the fixture. Recorded in `logs/prompt-log.md` under
+P-003. Repeat it only if the prompt changes.
 
 The third is a deliberately truncated trace: the run stops after sign-in, so
 the page text ACC-01 asks for was never captured. It is a prompt fixture, not
