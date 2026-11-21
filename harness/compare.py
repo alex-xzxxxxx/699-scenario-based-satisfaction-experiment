@@ -22,20 +22,46 @@ from __future__ import annotations
 import argparse
 import json
 import pathlib
+import sys
+
+from harness.judge import read_text_any   # tolerates a UTF-16 file (W02)
 
 VERDICTS = {"satisfied", "not_satisfied", "uncertain"}
 SHORT = {"satisfied": "SAT", "not_satisfied": "NOT", "uncertain": "UNC"}
 
 
-def load(path: str) -> dict[str, dict]:
+def load(path: str, label: str) -> dict[str, dict]:
+    """One JSONL file of verdicts, keyed by run_id.
+
+    Says what is wrong in a sentence rather than raising: this is run in front
+    of people, and a stack trace mid-demo tells them nothing.
+    """
     if not path:
         return {}
+    p = pathlib.Path(path)
+    if not p.exists():
+        raise SystemExit(
+            f"No {label} verdicts at {path}.\n"
+            f"  Expected one JSON object per line:\n"
+            f'    {{"run_id": "<the id>", "verdict": "satisfied", "note": "..."}}\n'
+            f"  verdict is satisfied, not_satisfied or uncertain.\n"
+            f"  Write it in an editor and save as UTF-8; PowerShell redirection\n"
+            f"  produces UTF-16, which is read here but is worth avoiding.")
     rows = {}
-    for line in pathlib.Path(path).read_text(encoding="utf-8").splitlines():
+    for n, line in enumerate(read_text_any(p).splitlines(), 1):
         line = line.strip()
-        if not line:
+        if not line or line.startswith("#"):
             continue
-        r = json.loads(line)
+        try:
+            r = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"{path} line {n} is not valid JSON: {exc.msg}\n  {line[:120]}")
+        if "run_id" not in r:
+            raise SystemExit(f"{path} line {n} has no run_id:\n  {line[:120]}")
+        v = r.get("verdict")
+        if v is not None and v not in VERDICTS:
+            print(f"warning: {path} line {n} has verdict {v!r}, not one of "
+                  f"{sorted(VERDICTS)} — it will be excluded", file=sys.stderr)
         rows[r["run_id"]] = r
     return rows
 
@@ -49,8 +75,8 @@ def main() -> int:
                     help="show the version column (read from the manifest)")
     a = ap.parse_args()
 
-    judge, human = load(a.judge), load(a.human)
-    man = load(a.manifest) if pathlib.Path(a.manifest).exists() else {}
+    judge, human = load(a.judge, "judge"), load(a.human, "human")
+    man = load(a.manifest, "manifest") if pathlib.Path(a.manifest).exists() else {}
 
     both = sorted(set(judge) & set(human))
     only_j = sorted(set(judge) - set(human))
